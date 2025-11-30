@@ -43,6 +43,8 @@ async function getRelatedProducts(categoryId: string, currentProductId: string) 
   }
 }
 
+export const revalidate = 3600
+
 export default async function ProductPage({ params }: PageProps) {
   const product = await getProduct(params.slug)
   
@@ -63,7 +65,14 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
-    title: `${product.name} - PeptideLabs`,
+    title: `${product.name} | Research Grade Peptide - PeptideLabs`,
     description: product.shortDescription || product.description.substring(0, 160),
+    openGraph: {
+      title: product.name,
+      description: product.shortDescription || product.description.substring(0, 160),
+      images: product.images.slice(0, 1),
+      type: 'website',
+    },
+    keywords: `${product.name}, research peptide, laboratory grade`,
   }
 }

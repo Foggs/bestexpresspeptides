@@ -1,18 +1,34 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 import { prisma } from "@/lib/prisma"
+import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-11-20.acacia",
 })
 
 export async function POST(request: NextRequest) {
+  const rateLimitResult = rateLimit(request, 50, 60000)
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: "Too many checkout requests. Please try again later." },
+      { 
+        status: 429,
+        headers: getRateLimitHeaders(rateLimitResult.remaining, 50),
+      }
+    )
+  }
+
   try {
     const body = await request.json()
     const { items, email } = body
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: "No items in cart" }, { status: 400 })
+    }
+
+    if (!email || !email.includes("@")) {
+      return NextResponse.json({ error: "Valid email is required" }, { status: 400 })
     }
 
     const lineItems = items.map((item: any) => ({
@@ -65,12 +81,18 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ url: session.url })
+    return NextResponse.json({ url: session.url }, {
+      headers: getRateLimitHeaders(rateLimitResult.remaining, 50),
+    })
   } catch (error) {
     console.error("Checkout error:", error)
+    const message = error instanceof Error ? error.message : "Unknown error"
     return NextResponse.json(
-      { error: "Error creating checkout session" },
-      { status: 500 }
+      { error: "Error creating checkout session", details: message },
+      { 
+        status: 500,
+        headers: getRateLimitHeaders(rateLimitResult.remaining, 50),
+      }
     )
   }
 }

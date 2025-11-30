@@ -32,18 +32,21 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <Link href={`/peptides/${product.slug}`}>
+      <Link href={`/peptides/${product.slug}`} title={`View ${product.name} details`}>
         <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
           {product.images[0] ? (
             <Image
               src={product.images[0]}
-              alt={product.name}
+              alt={`${product.name} - Research grade peptide`}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+              quality={80}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-6xl font-bold text-gray-200">
+              <div className="text-6xl font-bold text-gray-200" aria-hidden="true">
                 {product.name.charAt(0)}
               </div>
             </div>
