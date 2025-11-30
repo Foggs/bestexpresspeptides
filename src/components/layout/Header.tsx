@@ -14,16 +14,16 @@ export function Header() {
   const { data: session } = useSession()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60" role="banner">
       <div className="container-custom">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2">
-              <FlaskConical className="h-8 w-8 text-primary" />
+            <Link href="/" className="flex items-center gap-2" aria-label="PeptideLabs - Home">
+              <FlaskConical className="h-8 w-8 text-primary" aria-hidden="true" />
               <span className="text-xl font-bold text-primary">PeptideLabs</span>
             </Link>
             
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
               <Link href="/peptides" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">
                 All Peptides
               </Link>
