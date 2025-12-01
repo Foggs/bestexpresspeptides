@@ -1,7 +1,13 @@
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAdminAuth, createUnauthorizedResponse } from "@/lib/admin-auth"
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await verifyAdminAuth(request)
+  if (!auth.valid) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const orders = await prisma.order.findMany({
       include: {
@@ -9,6 +15,12 @@ export async function GET() {
           include: {
             product: true,
             variant: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            name: true,
           },
         },
       },
