@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -28,6 +29,7 @@ interface AdminUser {
 }
 
 export default function AdminDashboard() {
+  const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [adminToken, setAdminToken] = useState<string | null>(null)
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null)
@@ -46,9 +48,6 @@ export default function AdminDashboard() {
   })
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const [loginEmail, setLoginEmail] = useState("")
-  const [loginPassword, setLoginPassword] = useState("")
-  const [loginLoading, setLoginLoading] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -62,42 +61,6 @@ export default function AdminDashboard() {
       setLoading(false)
     }
   }, [])
-
-  const handleAdminLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoginLoading(true)
-    setError("")
-
-    try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: loginEmail,
-          password: loginPassword,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error)
-      }
-
-      localStorage.setItem("adminToken", data.token)
-      localStorage.setItem("adminUser", JSON.stringify(data.user))
-
-      setAdminToken(data.token)
-      setAdminUser(data.user)
-      setLoginEmail("")
-      setLoginPassword("")
-      fetchCoupons(data.token)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed")
-    } finally {
-      setLoginLoading(false)
-    }
-  }
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken")
@@ -229,40 +192,13 @@ export default function AdminDashboard() {
       <div className="min-h-screen flex items-center justify-center py-8">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Admin Login</CardTitle>
+            <CardTitle>Access Denied</CardTitle>
           </CardHeader>
-          <CardContent>
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded p-3 mb-4 flex items-center gap-2 text-red-800 text-sm">
-                <AlertCircle className="h-4 w-4" />
-                {error}
-              </div>
-            )}
-            <form onSubmit={handleAdminLogin} className="space-y-4">
-              <div>
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="admin@test.com"
-                  required
-                />
-              </div>
-              <div>
-                <Label>Password</Label>
-                <Input
-                  type="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="Password"
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loginLoading}>
-                {loginLoading ? "Logging in..." : "Login"}
-              </Button>
-            </form>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">Please log in to access the admin dashboard.</p>
+            <Button onClick={() => router.push("/admin/login")} className="w-full">
+              Go to Login
+            </Button>
           </CardContent>
         </Card>
       </div>
