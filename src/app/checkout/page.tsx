@@ -17,6 +17,7 @@ interface Errors {
   firstName?: string
   lastName?: string
   address?: string
+  apartment?: string
   city?: string
   state?: string
   zipCode?: string
@@ -247,7 +248,7 @@ export default function CheckoutPage() {
     const hasError = touched[id] && error
     return (
       <div>
-        <Label htmlFor={id}>
+        <Label htmlFor={id} className={hasError ? "text-red-500" : ""}>
           {label} {required && !optional && "*"} {optional && "(Optional)"}
         </Label>
         <Input
