@@ -100,6 +100,20 @@ model ProductVariant {
   updatedAt  DateTime    @updatedAt
 }
 
+model Coupon {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  discountType    String    @default("percentage")
+  discountValue   Int
+  isActive        Boolean   @default(true)
+  expiresAt       DateTime?
+  maxUses         Int?
+  timesUsed       Int       @default(0)
+  minOrderAmount  Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
 model Order {
   id              String      @id @default(cuid())
   userId          String?
@@ -110,6 +124,8 @@ model Order {
   subtotal        Int
   tax             Int         @default(0)
   shipping        Int         @default(0)
+  discount        Int         @default(0)
+  couponCode      String?
   stripeSessionId String?     @unique
   stripePaymentId String?
   shippingAddress Json?
