@@ -12,6 +12,16 @@ import { useCartStore } from "@/store/cart"
 import { formatPrice } from "@/lib/utils"
 import { ArrowLeft, Lock, CreditCard, AlertTriangle, Loader2, MapPin, AlertCircle, Tag, X } from "lucide-react"
 
+const US_STATES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+  "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+  "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
+  "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+  "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
+  "West Virginia", "Wisconsin", "Wyoming"
+]
+
 interface Errors {
   email?: string
   firstName?: string
@@ -130,7 +140,7 @@ export default function CheckoutPage() {
 
   const validateState = (value: string): string | undefined => {
     if (!value) return "State is required"
-    if (!/^[a-zA-Z]{2}$/.test(value)) return "State must be 2 letters (e.g., NY)"
+    if (!US_STATES.includes(value)) return "Please select a valid state"
     return undefined
   }
 
@@ -441,17 +451,31 @@ export default function CheckoutPage() {
                       required={true}
                     />
                   </div>
-                  <InputWithError
-                    id="state"
-                    label="State"
-                    placeholder="NY"
-                    value={state}
-                    onChange={(e) => { setState(e.target.value); validateFieldLive("state", e.target.value); }}
-                    onBlur={handleBlur}
-                    error={errors.state}
-                    touched={touched}
-                    required={true}
-                  />
+                  <div>
+                    <Label htmlFor="state" className={errors.state && (touched.state || state !== "") ? "text-red-500" : ""}>
+                      State *
+                    </Label>
+                    <select
+                      id="state"
+                      value={state}
+                      onChange={(e) => { setState(e.target.value); validateFieldLive("state", e.target.value); }}
+                      onBlur={() => handleBlur("state")}
+                      className={`w-full px-3 py-2 border rounded-md ${
+                        errors.state && (touched.state || state !== "") ? "border-red-500 focus:border-red-500" : ""
+                      }`}
+                    >
+                      <option value="">Select State</option>
+                      {US_STATES.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                    {errors.state && (touched.state || state !== "") && (
+                      <div className="flex items-center gap-1 mt-1 text-red-500 text-xs">
+                        <AlertCircle className="h-3 w-3" />
+                        <span>{errors.state}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <InputWithError
