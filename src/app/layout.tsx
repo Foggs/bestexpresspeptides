@@ -1,10 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { Header } from "@/components/layout/Header"
-import { Footer } from "@/components/layout/Footer"
-import { AgeVerification } from "@/components/layout/AgeVerification"
-import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner"
+import { LayoutWrapper } from "@/components/layout/LayoutWrapper"
 import { Toaster } from "@/components/ui/toaster"
 import { Providers } from "./providers"
 import { GoogleAnalytics } from "@/components/GoogleAnalytics"
@@ -70,13 +67,9 @@ export default function RootLayout({
           <a href="#main-content" className="sr-only focus:not-sr-only">
             Skip to main content
           </a>
-          <AgeVerification />
-          <DisclaimerBanner />
-          <Header />
-          <main id="main-content" className="min-h-screen">
+          <LayoutWrapper>
             {children}
-          </main>
-          <Footer />
+          </LayoutWrapper>
           <Toaster />
           <GoogleAnalytics />
         </Providers>
