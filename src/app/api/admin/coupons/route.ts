@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAdminAuth, createUnauthorizedResponse } from "@/lib/admin-auth"
 
 export async function GET(request: NextRequest) {
+  // Verify admin authentication
+  const auth = await verifyAdminAuth(request)
+  if (!auth.valid) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const coupons = await prisma.coupon.findMany({
       orderBy: { createdAt: "desc" },
@@ -14,6 +21,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Verify admin authentication
+  const auth = await verifyAdminAuth(request)
+  if (!auth.valid) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const body = await request.json()
     const { code, discountType, discountValue, isActive, expiresAt, maxUses, minOrderAmount } = body

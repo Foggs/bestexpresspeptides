@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAdminAuth, createUnauthorizedResponse } from "@/lib/admin-auth"
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Verify admin authentication
+  const auth = await verifyAdminAuth(request)
+  if (!auth.valid) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     const body = await request.json()
     const { discountType, discountValue, isActive, expiresAt, maxUses, minOrderAmount } = body
@@ -32,6 +39,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Verify admin authentication
+  const auth = await verifyAdminAuth(request)
+  if (!auth.valid) {
+    return createUnauthorizedResponse()
+  }
+
   try {
     await prisma.coupon.delete({
       where: { id: params.id },
