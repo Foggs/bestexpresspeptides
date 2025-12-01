@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { items, email } = body
+    const { items, email, shippingAddress, coupon } = body
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: "No items in cart" }, { status: 400 })
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
 
     const subtotal = items.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0)
     const shipping = subtotal >= 20000 ? 0 : 1500
+    const discount = coupon ? coupon.discount : 0
 
     if (shipping > 0) {
       lineItems.push({
@@ -55,6 +56,20 @@ export async function POST(request: NextRequest) {
             description: "Standard shipping (2-3 business days)",
           },
           unit_amount: shipping,
+        },
+        quantity: 1,
+      })
+    }
+
+    if (discount > 0) {
+      lineItems.push({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: `Discount (${coupon.code})`,
+            description: "Coupon applied",
+          },
+          unit_amount: -discount,
         },
         quantity: 1,
       })
@@ -78,6 +93,9 @@ export async function POST(request: NextRequest) {
           quantity: item.quantity,
           price: item.price,
         }))),
+        shippingAddress: JSON.stringify(shippingAddress),
+        couponCode: coupon?.code || "",
+        discount: discount.toString(),
       },
     })
 
