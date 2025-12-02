@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { ProductCard } from "@/components/products/ProductCard"
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/seo/JsonLd"
-import { prisma } from "@/lib/prisma"
+import { getFeaturedProducts, getCategoriesWithCount } from "@/lib/queries"
 import { 
   FlaskConical, 
   Shield, 
@@ -28,43 +28,11 @@ export const metadata: Metadata = {
   keywords: "research peptides, laboratory peptides, peptide research, scientific peptides, USA peptides, HPLC verified peptides",
 }
 
-async function getFeaturedProducts() {
-  try {
-    const products = await prisma.product.findMany({
-      where: {
-        featured: true,
-        active: true,
-      },
-      include: {
-        category: true,
-        variants: true,
-      },
-      take: 6,
-    })
-    return products
-  } catch (error) {
-    return []
-  }
-}
-
-async function getCategories() {
-  try {
-    const categories = await prisma.category.findMany({
-      include: {
-        _count: {
-          select: { products: true }
-        }
-      }
-    })
-    return categories
-  } catch (error) {
-    return []
-  }
-}
-
 export default async function HomePage() {
-  const featuredProducts = await getFeaturedProducts()
-  const categories = await getCategories()
+  const [featuredProducts, categories] = await Promise.all([
+    getFeaturedProducts(),
+    getCategoriesWithCount(),
+  ])
 
   return (
     <>

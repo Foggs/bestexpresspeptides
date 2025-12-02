@@ -1,9 +1,9 @@
 import { Metadata } from "next"
-import { prisma } from "@/lib/prisma"
 import { ProductCard } from "@/components/products/ProductCard"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd"
+import { getProducts, getCategoriesWithCount } from "@/lib/queries"
 import Link from "next/link"
 import { Search, Filter } from "lucide-react"
 
@@ -22,64 +22,14 @@ export const metadata: Metadata = {
   keywords: "research peptides, laboratory peptides, scientific peptides, peptide research, research chemicals",
 }
 
-async function getProducts(category?: string, search?: string, sort?: string) {
-  try {
-    const where: any = { active: true }
-    
-    if (category) {
-      where.category = { slug: category }
-    }
-    
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-      ]
-    }
-
-    let orderBy: any = { createdAt: 'desc' }
-    if (sort === 'price-asc') {
-      orderBy = { variants: { _min: { price: 'asc' } } }
-    } else if (sort === 'price-desc') {
-      orderBy = { variants: { _max: { price: 'desc' } } }
-    } else if (sort === 'name') {
-      orderBy = { name: 'asc' }
-    }
-
-    const products = await prisma.product.findMany({
-      where,
-      include: {
-        category: true,
-        variants: true,
-      },
-      orderBy,
-    })
-    return products
-  } catch (error) {
-    return []
-  }
-}
-
-async function getCategories() {
-  try {
-    const categories = await prisma.category.findMany({
-      include: {
-        _count: {
-          select: { products: true }
-        }
-      }
-    })
-    return categories
-  } catch (error) {
-    return []
-  }
-}
-
 export default async function PeptidesPage({ searchParams }: PageProps) {
   const params = await searchParams
   const { category, search, sort } = params
-  const products = await getProducts(category, search, sort)
-  const categories = await getCategories()
+  
+  const [products, categories] = await Promise.all([
+    getProducts({ category, search, sort }),
+    getCategoriesWithCount(),
+  ])
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://peptidelabs.com"
 
   const breadcrumbItems = [
