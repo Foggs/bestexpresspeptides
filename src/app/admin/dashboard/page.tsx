@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { LogOut, ShoppingBag, Tag } from "lucide-react"
+import { LogOut, ShoppingBag, Tag, Package } from "lucide-react"
 
 interface AdminUser {
   id: string
@@ -77,7 +77,23 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card 
+            className="hover:shadow-lg transition-shadow cursor-pointer" 
+            onClick={() => router.push("/admin/products")}
+          >
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Package className="h-6 w-6 text-purple-600" />
+                <CardTitle>Products</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">Create, edit, and manage research peptide products.</p>
+              <Button className="w-full">Manage Products</Button>
+            </CardContent>
+          </Card>
+
           <Card 
             className="hover:shadow-lg transition-shadow cursor-pointer" 
             onClick={() => router.push("/admin/orders")}
