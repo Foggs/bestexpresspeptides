@@ -48,6 +48,8 @@ Required environment variables:
 - `npm run build` - Build for production
 - `npm run db:push` - Push Prisma schema to database
 - `npm run db:seed` - Seed database with sample products
+- `npm run test:e2e` - Run Playwright end-to-end tests
+- `npm run test:e2e:report` - View HTML test report
 
 ## Features
 - Age verification gate (21+)
@@ -93,6 +95,22 @@ All products are clearly labeled "For Research Use Only - Not for Human Consumpt
 - **Static SVG icons**: Created src/components/icons/index.tsx with static SVG components for frequently used icons (FlaskIcon, CartIcon, MenuIcon, CloseIcon, UserIcon, WarningIcon, MailIcon, PhoneIcon) - reduces lucide-react bundle impact
 - **Cart store hydration**: Implemented _hasHydrated flag with onRehydrateStorage callback to prevent SSR/client hydration mismatches
 
+## End-to-End Testing
+Playwright tests are configured for QA testing of the purchasing workflow:
+- **Location**: `e2e/purchasing-workflow.spec.ts`
+- **Run tests**: `npm run test:e2e` (requires dev server running or uses webServer config)
+- **View report**: `npm run test:e2e:report`
+
+Test coverage includes:
+1. Product catalog display and filtering
+2. Product detail page with pricing
+3. Add to cart functionality
+4. Cart page operations
+5. Checkout flow (Proceed to Checkout button)
+6. Order success page
+
+Note: Tests use system Chromium via `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` environment variable.
+
 ## Recent Changes (December 2024)
 - Fixed sitemap.xml to only include existing pages (removed /about, /contact, /faq)
 - Corrected /refund-policy to /refund in sitemap
@@ -101,3 +119,4 @@ All products are clearly labeled "For Research Use Only - Not for Human Consumpt
 - Performance optimizations: query optimization, caching, dependency cleanup
 - Added static SVG icons to reduce bundle size
 - Implemented cart store lazy hydration pattern
+- Added Playwright E2E tests for purchasing workflow
