@@ -30,6 +30,25 @@ export interface Product {
   updatedAt: Date
 }
 
+export interface ProductListItem {
+  id: string
+  name: string
+  slug: string
+  shortDescription?: string | null
+  images: string[]
+  featured: boolean
+  active: boolean
+  category: {
+    name: string
+    slug: string
+  }
+  variants: {
+    id: string
+    name: string
+    price: number
+  }[]
+}
+
 export interface ProductVariant {
   id: string
   name: string

@@ -3,11 +3,14 @@ import Stripe from "stripe"
 import { prisma } from "@/lib/prisma"
 import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-02-24.acacia",
-})
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2025-02-24.acacia",
+  })
+}
 
 export async function POST(request: NextRequest) {
+  const stripe = getStripe()
   const rateLimitResult = rateLimit(request, 50, 60000)
   if (!rateLimitResult.success) {
     return NextResponse.json(

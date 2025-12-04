@@ -22,11 +22,11 @@ import {
   CheckCircle,
   ArrowLeft
 } from "lucide-react"
-import type { Product } from "@/types"
+import type { Product, ProductListItem } from "@/types"
 
 interface ProductDetailsProps {
   product: Product
-  relatedProducts: Product[]
+  relatedProducts: ProductListItem[]
 }
 
 export function ProductDetails({ product, relatedProducts }: ProductDetailsProps) {

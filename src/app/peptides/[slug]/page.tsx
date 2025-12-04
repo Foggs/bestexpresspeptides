@@ -4,13 +4,14 @@ import { ProductJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd"
 import { getProductBySlug, getRelatedProducts } from "@/lib/queries"
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export const revalidate = 3600
 
 export default async function ProductPage({ params }: PageProps) {
-  const product = await getProductBySlug(params.slug)
+  const { slug } = await params
+  const product = await getProductBySlug(slug)
   
   if (!product) {
     notFound()
@@ -18,7 +19,9 @@ export default async function ProductPage({ params }: PageProps) {
 
   const relatedProducts = await getRelatedProducts(product.categoryId, product.id)
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bestexpresspeptides.com"
-  const lowestPrice = product.variants.length > 0 ? product.variants[0].price : 0
+  const firstVariant = product.variants[0]
+  const lowestPrice = firstVariant?.price || 0
+  const productSku = firstVariant?.sku || product.slug
 
   const breadcrumbItems = [
     { name: "Home", url: baseUrl },
@@ -33,7 +36,7 @@ export default async function ProductPage({ params }: PageProps) {
         name={product.name}
         description={product.shortDescription || product.description.substring(0, 160)}
         image={product.images[0]}
-        sku={product.sku}
+        sku={productSku}
         price={lowestPrice}
         category={product.category.name}
         url={`${baseUrl}/peptides/${product.slug}`}
@@ -45,7 +48,8 @@ export default async function ProductPage({ params }: PageProps) {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const product = await getProductBySlug(params.slug)
+  const { slug } = await params
+  const product = await getProductBySlug(slug)
   
   if (!product) {
     return { title: 'Product Not Found' }
