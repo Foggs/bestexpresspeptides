@@ -5,6 +5,8 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Seeding database...')
 
+  const peptideImage = '/images/peptide-vial.png'
+
   const categories = await Promise.all([
     prisma.category.upsert({
       where: { slug: 'recovery' },
@@ -90,7 +92,7 @@ Store lyophilized peptide at -20°C for long-term storage. Reconstituted peptide
 
 **What is included with my order?**
 Each order includes the peptide vial(s) and a Certificate of Analysis (COA).`,
-      images: [],
+      images: [peptideImage],
       featured: true,
       categoryId: recovery.id,
       variants: [
@@ -120,7 +122,7 @@ Research applications include:
 - Veterinary studies (extensively researched in horses)
 - Tissue regeneration research
 - Inflammatory response studies`,
-      images: [],
+      images: [peptideImage],
       featured: true,
       categoryId: recovery.id,
       variants: [
@@ -151,7 +153,7 @@ Research areas include:
 - Extended half-life compared to native GLP-1
 - High receptor binding affinity
 - Well-characterized pharmacological profile`,
-      images: [],
+      images: [peptideImage],
       featured: true,
       categoryId: weightLoss.id,
       variants: [
@@ -181,7 +183,7 @@ Research applications:
 - Comparative metabolic studies
 - Receptor binding research
 - Pathway interaction studies`,
-      images: [],
+      images: [peptideImage],
       featured: true,
       categoryId: weightLoss.id,
       variants: [
@@ -200,7 +202,7 @@ Research applications include:
 - Advanced metabolic research
 - Comparative studies with dual agonists
 - Energy expenditure research`,
-      images: [],
+      images: [peptideImage],
       featured: false,
       categoryId: weightLoss.id,
       variants: [
@@ -231,7 +233,7 @@ Research areas:
 - Copper delivery to tissues
 - Extracellular matrix interactions
 - Growth factor stimulation`,
-      images: [],
+      images: [peptideImage],
       featured: true,
       categoryId: longevity.id,
       variants: [
@@ -252,7 +254,7 @@ Research applications:
 - GH release studies
 - Pulsatile hormone research
 - Synergistic peptide interactions`,
-      images: [],
+      images: [peptideImage],
       featured: true,
       categoryId: strength.id,
       variants: [
@@ -283,7 +285,7 @@ Research applications:
 - Aging research
 - Cellular bioenergetics
 - Neurodegenerative research models`,
-      images: [],
+      images: [peptideImage],
       featured: false,
       categoryId: longevity.id,
       variants: [
@@ -302,7 +304,7 @@ Research areas include:
 - Metabolic regulation studies
 - Exercise mimetic research
 - Insulin sensitivity studies`,
-      images: [],
+      images: [peptideImage],
       featured: false,
       categoryId: longevity.id,
       variants: [
@@ -321,7 +323,7 @@ Research applications:
 - Anxiety research models
 - BDNF expression studies
 - Nootropic mechanism research`,
-      images: [],
+      images: [peptideImage],
       featured: false,
       categoryId: cognitive.id,
       variants: [
