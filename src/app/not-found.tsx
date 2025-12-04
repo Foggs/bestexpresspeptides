@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Home, Search, FlaskConical, ArrowRight } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "404 - Page Not Found | PeptideLabs",
+  title: "404 - Page Not Found | BestExpressPeptides",
   description: "The page you are looking for does not exist. Browse our research peptide catalog or return to the homepage.",
   robots: {
     index: false,

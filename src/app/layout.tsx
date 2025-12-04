@@ -9,25 +9,25 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "PeptideLabs - Premium Research Peptides | Laboratory Grade",
+  title: "BestExpressPeptides - Premium Research Peptides | Laboratory Grade",
   description: "Premium quality research peptides for scientific study. 99%+ purity, lab-tested, research-grade compounds. HPLC verified. For research use only.",
   keywords: "research peptides, laboratory peptides, BPC-157, TB-500, Semaglutide, peptide research",
-  authors: [{ name: "PeptideLabs" }],
+  authors: [{ name: "BestExpressPeptides" }],
   openGraph: {
     type: "website",
-    url: "https://peptidelabs.com",
-    title: "PeptideLabs - Premium Research Peptides",
+    url: "https://bestexpresspeptides.com",
+    title: "BestExpressPeptides - Premium Research Peptides",
     description: "Premium quality research peptides for scientific study. Lab-tested, research-grade compounds.",
-    siteName: "PeptideLabs",
+    siteName: "BestExpressPeptides",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PeptideLabs - Premium Research Peptides",
+    title: "BestExpressPeptides - Premium Research Peptides",
     description: "Premium quality research peptides for scientific study.",
   },
   robots: "index, follow",
   alternates: {
-    canonical: "https://peptidelabs.com",
+    canonical: "https://bestexpresspeptides.com",
   },
 }
 
@@ -48,9 +48,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "PeptideLabs",
-              url: "https://peptidelabs.com",
-              logo: "https://peptidelabs.com/logo.png",
+              name: "BestExpressPeptides",
+              url: "https://bestexpresspeptides.com",
+              logo: "https://bestexpresspeptides.com/logo.png",
               description: "Premium quality research peptides for scientific study",
               sameAs: [],
               contactPoint: {

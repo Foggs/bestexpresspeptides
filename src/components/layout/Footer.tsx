@@ -10,7 +10,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <FlaskIcon size={24} className="text-primary" />
-              <span className="text-lg font-bold text-white">PeptideLabs</span>
+              <span className="text-lg font-bold text-white">BestExpressPeptides</span>
             </div>
             <p className="text-sm">
               Premium research peptides for scientific study. All products are for research purposes only.
@@ -18,7 +18,7 @@ export function Footer() {
             <address className="not-italic space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <MailIcon size={16} />
-                <a href="mailto:support@peptidelabs.com" className="hover:text-primary transition-colors">support@peptidelabs.com</a>
+                <a href="mailto:support@bestexpresspeptides.com" className="hover:text-primary transition-colors">support@bestexpresspeptides.com</a>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <PhoneIcon size={16} />
@@ -68,7 +68,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} PeptideLabs. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} BestExpressPeptides. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <span>Secure Checkout</span>
             <span>|</span>

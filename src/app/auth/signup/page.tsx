@@ -69,7 +69,7 @@ export default function SignUpPage() {
               </div>
             </div>
             <CardTitle className="text-2xl">Create Account</CardTitle>
-            <CardDescription>Sign up for a PeptideLabs account</CardDescription>
+            <CardDescription>Sign up for a BestExpressPeptides account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button

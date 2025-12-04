@@ -1,6 +1,6 @@
 # End-to-End Testing Guide
 
-This directory contains Playwright end-to-end tests for the PeptideLabs purchasing workflow.
+This directory contains Playwright end-to-end tests for the BestExpressPeptides purchasing workflow.
 
 ## Prerequisites
 

@@ -12,10 +12,10 @@ interface PageProps {
 }
 
 export const metadata: Metadata = {
-  title: "Research Peptides | Laboratory Grade Peptides - PeptideLabs",
+  title: "Research Peptides | Laboratory Grade Peptides - BestExpressPeptides",
   description: "Browse our comprehensive collection of premium research-grade peptides for scientific research. All products are rigorously tested for purity. For research use only.",
   openGraph: {
-    title: "Research Peptides | PeptideLabs",
+    title: "Research Peptides | BestExpressPeptides",
     description: "Browse our comprehensive collection of premium research-grade peptides for scientific research.",
     type: "website",
   },
@@ -30,7 +30,7 @@ export default async function PeptidesPage({ searchParams }: PageProps) {
     getProducts({ category, search, sort }),
     getCategoriesWithCount(),
   ])
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://peptidelabs.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bestexpresspeptides.com"
 
   const breadcrumbItems = [
     { name: "Home", url: baseUrl },

@@ -8,7 +8,7 @@ Disallow: /account
 Disallow: /*.json$
 Disallow: /*?*
 
-Sitemap: https://peptidelabs.com/sitemap.xml
+Sitemap: https://bestexpresspeptides.com/sitemap.xml
 
 User-agent: GPTBot
 Disallow: /

@@ -19,7 +19,7 @@ export function ProductJsonLd({
   price,
   currency = "USD",
   availability = "InStock",
-  brand = "PeptideLabs",
+  brand = "BestExpressPeptides",
   category,
   url,
 }: ProductJsonLdProps) {
@@ -43,7 +43,7 @@ export function ProductJsonLd({
       availability: `https://schema.org/${availability}`,
       seller: {
         "@type": "Organization",
-        name: "PeptideLabs",
+        name: "BestExpressPeptides",
       },
     },
   }
@@ -93,8 +93,8 @@ interface OrganizationJsonLdProps {
 }
 
 export function OrganizationJsonLd({
-  name = "PeptideLabs",
-  url = "https://peptidelabs.com",
+  name = "BestExpressPeptides",
+  url = "https://bestexpresspteptides.com",
   logo,
   description = "Premium research-grade peptides for scientific research. All products are for research use only.",
 }: OrganizationJsonLdProps) {
@@ -153,8 +153,8 @@ interface WebsiteJsonLdProps {
 }
 
 export function WebsiteJsonLd({
-  name = "PeptideLabs",
-  url = "https://peptidelabs.com",
+  name = "BestExpressPeptides",
+  url = "https://bestexpresspeptides.com",
   description = "Premium research-grade peptides for scientific research.",
 }: WebsiteJsonLdProps) {
   const jsonLd = {

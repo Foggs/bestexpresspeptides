@@ -18,10 +18,10 @@ import {
 } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "PeptideLabs | Premium Research-Grade Peptides for Scientific Research",
+  title: "BestExpressPeptides | Premium Research-Grade Peptides for Scientific Research",
   description: "Discover our comprehensive collection of laboratory-grade research peptides. 99%+ purity verified, fast shipping, and certificates of analysis. For research use only.",
   openGraph: {
-    title: "PeptideLabs | Premium Research-Grade Peptides",
+    title: "BestExpressPeptides | Premium Research-Grade Peptides",
     description: "Discover our comprehensive collection of laboratory-grade research peptides. 99%+ purity verified.",
     type: "website",
   },
@@ -165,7 +165,7 @@ export default async function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Choose PeptideLabs?</h2>
+            <h2 className="text-3xl font-bold mb-4">Why Choose BestExpressPeptides?</h2>
             <p className="text-muted-foreground">
               We are committed to providing the highest quality research peptides for the scientific community.
             </p>

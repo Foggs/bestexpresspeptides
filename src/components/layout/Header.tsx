@@ -18,9 +18,9 @@ export function Header() {
       <div className="container-custom">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2" aria-label="PeptideLabs - Home">
+            <Link href="/" className="flex items-center gap-2" aria-label="BestExpressPeptides - Home">
               <FlaskIcon size={32} className="text-primary" />
-              <span className="text-xl font-bold text-primary">PeptideLabs</span>
+              <span className="text-xl font-bold text-primary">BestExpressPeptides</span>
             </Link>
             
             <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">

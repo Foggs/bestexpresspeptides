@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Terms of Service - PeptideLabs",
-  description: "PeptideLabs Terms of Service and conditions of use for research peptides.",
+  title: "Terms of Service - BestExpressPeptides",
+  description: "BestExpressPeptides Terms of Service and conditions of use for research peptides.",
 }
 
 export default function TermsPage() {
@@ -18,21 +18,21 @@ export default function TermsPage() {
           <CardContent className="prose prose-sm max-w-none space-y-6">
             <div>
               <p>
-                PeptideLabs, LLC (referred to as "PeptideLabs," "us," "our" or "we") provides the peptidelabs.com website (the "Site"), related software products, and the services described in more detail below (together referred to as the "Services") subject to your compliance with all the terms, conditions, and notices contained or referenced herein (the "Terms of Use"), as well as any other written agreement between us.
+                BestExpressPeptides, LLC (referred to as "BestExpressPeptides," "us," "our" or "we") provides the bestexpresspeptides.com website (the "Site"), related software products, and the services described in more detail below (together referred to as the "Services") subject to your compliance with all the terms, conditions, and notices contained or referenced herein (the "Terms of Use"), as well as any other written agreement between us.
               </p>
             </div>
 
             <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
               <p className="font-semibold text-red-900 mb-2">IMPORTANT NOTICE</p>
               <p className="text-red-800 text-sm">
-                All products sold by PeptideLabs are intended for research and laboratory use only. These products are NOT intended for human consumption or medical use. Do not use these products for any purpose other than legitimate research. By using our Services, you agree that you understand and accept the research-only nature of these products.
+                All products sold by BestExpressPeptides are intended for research and laboratory use only. These products are NOT intended for human consumption or medical use. Do not use these products for any purpose other than legitimate research. By using our Services, you agree that you understand and accept the research-only nature of these products.
               </p>
             </div>
 
             <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
               <p className="font-semibold text-yellow-900 mb-2">CONTENT DISCLAIMER</p>
               <p className="text-yellow-800 text-sm">
-                The content on the Site is not a replacement for seeking professional research guidance or consultation with qualified professionals. Unless we agree otherwise in writing, PeptideLabs is not providing professional advice of any kind. Your reliance on any content available on or through the Site is at your own risk, and you assume all risk for such reliance.
+                The content on the Site is not a replacement for seeking professional research guidance or consultation with qualified professionals. Unless we agree otherwise in writing, BestExpressPeptides is not providing professional advice of any kind. Your reliance on any content available on or through the Site is at your own risk, and you assume all risk for such reliance.
               </p>
             </div>
 
@@ -156,7 +156,7 @@ export default function TermsPage() {
             <div>
               <h2 className="text-2xl font-bold mt-8 mb-4">15. Research Use Acknowledgment</h2>
               <p className="font-semibold">
-                YOU ACKNOWLEDGE AND AGREE THAT ALL PEPTIDELABS PRODUCTS ARE FOR RESEARCH USE ONLY AND NOT FOR HUMAN OR ANIMAL CONSUMPTION. YOU ASSUME FULL RESPONSIBILITY FOR THE PROPER AND LAWFUL USE OF THESE PRODUCTS IN ACCORDANCE WITH ALL APPLICABLE LAWS AND REGULATIONS.
+                YOU ACKNOWLEDGE AND AGREE THAT ALL BESTEXPRESSPEPTIDES PRODUCTS ARE FOR RESEARCH USE ONLY AND NOT FOR HUMAN OR ANIMAL CONSUMPTION. YOU ASSUME FULL RESPONSIBILITY FOR THE PROPER AND LAWFUL USE OF THESE PRODUCTS IN ACCORDANCE WITH ALL APPLICABLE LAWS AND REGULATIONS.
               </p>
             </div>
 
@@ -166,9 +166,9 @@ export default function TermsPage() {
                 For questions about these Terms of Service or to report concerns, please contact us:
               </p>
               <ul className="list-disc pl-6 space-y-2 mt-4">
-                <li>Email: support@peptidelabs.com</li>
+                <li>Email: support@bestexpresspeptides.com</li>
                 <li>Phone: 1-800-PEPTIDE</li>
-                <li>Website: peptidelabs.com</li>
+                <li>Website: bestexpresspeptides.com</li>
               </ul>
             </div>
           </CardContent>

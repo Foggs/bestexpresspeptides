@@ -19,7 +19,7 @@ export default function DisclaimerPage() {
               <p className="text-yellow-800 mb-0">
                 All products sold on this website are intended for laboratory research purposes 
                 only. These products are NOT intended for human or animal consumption, medical, 
-                therapeutic, or diagnostic use. By purchasing from PeptideLabs, you acknowledge 
+                therapeutic, or diagnostic use. By purchasing from BestExpressPeptides, you acknowledge 
                 and agree to these terms.
               </p>
             </div>
@@ -65,7 +65,7 @@ export default function DisclaimerPage() {
 
             <h2>Limitation of Liability</h2>
             <p>
-              PeptideLabs, its owners, employees, and affiliates shall not be held liable for 
+              BestExpressPeptides, its owners, employees, and affiliates shall not be held liable for 
               any damages, injuries, or legal consequences arising from the purchase, handling, 
               or use of products sold on this website. This includes but is not limited to:
             </p>

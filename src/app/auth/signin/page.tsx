@@ -51,7 +51,7 @@ export default function SignInPage() {
               </div>
             </div>
             <CardTitle className="text-2xl">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your PeptideLabs account</CardDescription>
+            <CardDescription>Sign in to your BestExpressPeptides account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">

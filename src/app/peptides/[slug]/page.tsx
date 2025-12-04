@@ -17,7 +17,7 @@ export default async function ProductPage({ params }: PageProps) {
   }
 
   const relatedProducts = await getRelatedProducts(product.categoryId, product.id)
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://peptidelabs.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bestexpresspeptides.com"
   const lowestPrice = product.variants.length > 0 ? product.variants[0].price : 0
 
   const breadcrumbItems = [
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
-    title: `${product.name} | Research Grade Peptide - PeptideLabs`,
+    title: `${product.name} | Research Grade Peptide - BestExpressPeptides`,
     description: product.shortDescription || product.description.substring(0, 160),
     openGraph: {
       title: product.name,

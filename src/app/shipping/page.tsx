@@ -134,7 +134,7 @@ export default function ShippingPage() {
 
             <h2>Contact Us</h2>
             <p>
-              For shipping inquiries, please contact us at shipping@peptidelabs.com or call 
+              For shipping inquiries, please contact us at shipping@bestexpresspeptides.com or call 
               1-800-PEPTIDE.
             </p>
           </CardContent>

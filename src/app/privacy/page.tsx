@@ -80,7 +80,7 @@ export default function PrivacyPage() {
             <h2>9. Contact Us</h2>
             <p>
               If you have questions about this Privacy Policy, please contact us at 
-              privacy@peptidelabs.com.
+              privacy@bestexpresspeptides.com.
             </p>
           </CardContent>
         </Card>

@@ -1,4 +1,4 @@
-# PeptideLabs - Research Peptide E-commerce Store
+# BestExpressPeptides - Research Peptide E-commerce Store
 
 ## Overview
 A production-ready e-commerce website for selling research peptides built with Next.js 15 (App Router), TypeScript, and modern web technologies.
