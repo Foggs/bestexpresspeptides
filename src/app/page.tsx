@@ -110,6 +110,30 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {featuredProducts.length > 0 && (
+        <section className="py-16">
+          <div className="container-custom">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="text-3xl font-bold mb-2">Featured Peptides</h2>
+                <p className="text-muted-foreground">Our most popular research compounds</p>
+              </div>
+              <Button asChild variant="outline">
+                <Link href="/peptides">
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {categories.length > 0 && (
         <section className="py-16 bg-gray-50">
           <div className="container-custom">
@@ -132,30 +156,6 @@ export default async function HomePage() {
                     </CardContent>
                   </Card>
                 </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {featuredProducts.length > 0 && (
-        <section className="py-16">
-          <div className="container-custom">
-            <div className="flex items-center justify-between mb-12">
-              <div>
-                <h2 className="text-3xl font-bold mb-2">Featured Peptides</h2>
-                <p className="text-muted-foreground">Our most popular research compounds</p>
-              </div>
-              <Button asChild variant="outline">
-                <Link href="/peptides">
-                  View All
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           </div>
