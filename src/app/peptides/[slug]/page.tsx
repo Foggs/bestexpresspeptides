@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { ProductDetails } from "./ProductDetails"
 import { ProductJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd"
-import { getProductBySlug, getRelatedProducts } from "@/lib/queries"
+import { getCachedProductBySlug, getCachedRelatedProducts } from "@/lib/productCache"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -11,13 +11,13 @@ export const revalidate = 3600
 
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params
-  const product = await getProductBySlug(slug)
+  const product = await getCachedProductBySlug(slug)
   
   if (!product) {
     notFound()
   }
 
-  const relatedProducts = await getRelatedProducts(product.categoryId, product.id)
+  const relatedProducts = await getCachedRelatedProducts(product.category.slug, product.slug)
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bestexpresspeptides.com"
   const firstVariant = product.variants[0]
   const lowestPrice = firstVariant?.price || 0
@@ -49,7 +49,7 @@ export default async function ProductPage({ params }: PageProps) {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
-  const product = await getProductBySlug(slug)
+  const product = await getCachedProductBySlug(slug)
   
   if (!product) {
     return { title: 'Product Not Found' }

@@ -3,7 +3,7 @@ import { ProductCard } from "@/components/products/ProductCard"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd"
-import { getProducts, getCategoriesWithCount } from "@/lib/queries"
+import { getCachedProducts, getCachedCategories } from "@/lib/productCache"
 import Link from "next/link"
 import { Search, Filter } from "lucide-react"
 
@@ -27,8 +27,8 @@ export default async function PeptidesPage({ searchParams }: PageProps) {
   const { category, search, sort } = params
   
   const [products, categories] = await Promise.all([
-    getProducts({ category, search, sort }),
-    getCategoriesWithCount(),
+    getCachedProducts({ category, search, sort }),
+    getCachedCategories(),
   ])
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bestexpresspeptides.com"
 

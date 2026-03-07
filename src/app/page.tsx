@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { ProductCard } from "@/components/products/ProductCard"
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/seo/JsonLd"
-import { getFeaturedProducts, getCategoriesWithCount } from "@/lib/queries"
+import { getCachedFeaturedProducts, getCachedCategories } from "@/lib/productCache"
 import { 
   FlaskConical, 
   Shield, 
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const [featuredProducts, categories] = await Promise.all([
-    getFeaturedProducts(),
-    getCategoriesWithCount(),
+    getCachedFeaturedProducts(),
+    getCachedCategories(),
   ])
 
   return (
