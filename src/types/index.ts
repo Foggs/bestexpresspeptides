@@ -25,6 +25,7 @@ export interface Product {
   active: boolean
   categoryId: string
   category: Category
+  categories: { id: string; name: string; slug: string }[]
   variants: ProductVariant[]
   createdAt: Date
   updatedAt: Date
@@ -42,6 +43,10 @@ export interface ProductListItem {
     name: string
     slug: string
   }
+  categories: {
+    name: string
+    slug: string
+  }[]
   variants: {
     id: string
     name: string

@@ -37,6 +37,10 @@ interface CachedProductListItem {
     name: string
     slug: string
   }
+  categories: {
+    name: string
+    slug: string
+  }[]
   variants: {
     id: string
     name: string
@@ -64,6 +68,11 @@ interface CachedProductFull {
     slug: string
     description: string | null
   }
+  categories: {
+    id: string
+    name: string
+    slug: string
+  }[]
   variants: {
     id: string
     name: string
@@ -126,6 +135,11 @@ function parsePriceToCents(value: string): number {
   const dollars = parseFloat(cleaned)
   if (isNaN(dollars)) return 0
   return Math.round(dollars * 100)
+}
+
+function parseCategories(value: string): string[] {
+  if (!value || !value.trim()) return ['Uncategorized']
+  return value.split(',').map(c => c.trim()).filter(Boolean)
 }
 
 async function fetchFromSheet(): Promise<CachedProductFull[]> {
@@ -222,17 +236,19 @@ async function fetchFromSheet(): Promise<CachedProductFull[]> {
   const products: CachedProductFull[] = normalizedProducts
     .filter((p: SheetProduct) => p.slug && p.name)
     .map((p: SheetProduct) => {
-      const categoryName = p.category?.trim() || 'Uncategorized'
-      const categorySlug = slugify(categoryName)
-      const categoryId = generateId('cat', categorySlug)
+      const categoryNames = parseCategories(p.category)
+      const primaryCategoryName = categoryNames[0]
+      const primaryCategorySlug = slugify(primaryCategoryName)
+      const primaryCategoryId = generateId('cat', primaryCategorySlug)
 
-      if (!categoryMap.has(categorySlug)) {
-        categoryMap.set(categorySlug, {
-          id: categoryId,
-          name: categoryName,
-          slug: categorySlug,
-        })
-      }
+      const productCategories = categoryNames.map(name => {
+        const slug = slugify(name)
+        const id = generateId('cat', slug)
+        if (!categoryMap.has(slug)) {
+          categoryMap.set(slug, { id, name, slug })
+        }
+        return { id, name, slug }
+      })
 
       const productId = generateId('prod', p.slug)
       const productVariants = normalizedVariants
@@ -260,8 +276,9 @@ async function fetchFromSheet(): Promise<CachedProductFull[]> {
         images: parseImages(p.images),
         featured: parseBoolean(p.featured),
         active: p.active === '' ? true : parseBoolean(p.active),
-        categoryId,
-        category: categoryMap.get(categorySlug)!,
+        categoryId: primaryCategoryId,
+        category: categoryMap.get(primaryCategorySlug)! as CachedProductFull['category'],
+        categories: productCategories,
         variants: productVariants,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -315,7 +332,9 @@ export async function getCachedProducts(options?: {
   let filtered = allProducts.filter(p => p.active)
 
   if (options?.category) {
-    filtered = filtered.filter(p => p.category.slug === options.category)
+    filtered = filtered.filter(p =>
+      p.categories.some(c => c.slug === options.category)
+    )
   }
 
   if (options?.search) {
@@ -354,6 +373,7 @@ export async function getCachedProducts(options?: {
       name: p.category.name,
       slug: p.category.slug,
     },
+    categories: p.categories.map(c => ({ name: c.name, slug: c.slug })),
     variants: p.variants.map(v => ({
       id: v.id,
       name: v.name,
@@ -380,6 +400,7 @@ export async function getCachedFeaturedProducts(): Promise<CachedProductListItem
         name: p.category.name,
         slug: p.category.slug,
       },
+      categories: p.categories.map(c => ({ name: c.name, slug: c.slug })),
       variants: p.variants.map(v => ({
         id: v.id,
         name: v.name,
@@ -394,13 +415,17 @@ export async function getCachedProductBySlug(slug: string): Promise<CachedProduc
 }
 
 export async function getCachedRelatedProducts(
-  categorySlug: string,
+  categorySlugs: string[],
   excludeSlug: string
 ): Promise<CachedProductListItem[]> {
   const allProducts = await getCache()
 
   return allProducts
-    .filter(p => p.category.slug === categorySlug && p.slug !== excludeSlug && p.active)
+    .filter(p =>
+      p.slug !== excludeSlug &&
+      p.active &&
+      p.categories.some(c => categorySlugs.includes(c.slug))
+    )
     .slice(0, 4)
     .map(p => ({
       id: p.id,
@@ -414,6 +439,7 @@ export async function getCachedRelatedProducts(
         name: p.category.name,
         slug: p.category.slug,
       },
+      categories: p.categories.map(c => ({ name: c.name, slug: c.slug })),
       variants: p.variants.map(v => ({
         id: v.id,
         name: v.name,
@@ -429,19 +455,21 @@ export async function getCachedCategories(): Promise<CachedCategory[]> {
   const categoryMap = new Map<string, CachedCategory>()
 
   for (const product of activeProducts) {
-    const existing = categoryMap.get(product.category.slug)
-    if (existing) {
-      existing._count.products++
-    } else {
-      categoryMap.set(product.category.slug, {
-        id: product.categoryId,
-        name: product.category.name,
-        slug: product.category.slug,
-        description: null,
-        _count: { products: 1 },
-      })
+    for (const cat of product.categories) {
+      const existing = categoryMap.get(cat.slug)
+      if (existing) {
+        existing._count.products++
+      } else {
+        categoryMap.set(cat.slug, {
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+          description: null,
+          _count: { products: 1 },
+        })
+      }
     }
   }
 
-  return Array.from(categoryMap.values())
+  return Array.from(categoryMap.values()).sort((a, b) => a.name.localeCompare(b.name))
 }

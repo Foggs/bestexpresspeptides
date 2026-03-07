@@ -101,7 +101,11 @@ export function ProductDetails({ product, relatedProducts }: ProductDetailsProps
 
           <div className="space-y-6">
             <div>
-              <Badge variant="secondary" className="mb-2">{product.category.name}</Badge>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {product.categories?.map((cat: { name: string; slug: string }) => (
+                  <Badge key={cat.slug} variant="secondary">{cat.name}</Badge>
+                )) || <Badge variant="secondary">{product.category.name}</Badge>}
+              </div>
               <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
               <p className="text-muted-foreground">{product.shortDescription}</p>
             </div>

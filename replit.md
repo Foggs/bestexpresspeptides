@@ -80,6 +80,7 @@ Required environment variables:
 ## Features
 - Age verification gate (21+)
 - Product catalog sourced from Google Sheets with in-memory caching
+- Multi-category support (comma-separated in sheet, products appear in all relevant category filters)
 - Shopping cart with localStorage persistence
 - Email-based order submission (admin receives order details via Resend)
 - User accounts with order history
@@ -93,7 +94,7 @@ Required environment variables:
 - Admin products page has "Refresh from Google Sheets" button and link to edit the sheet
 
 ## Google Sheet Structure
-- **Products tab**: slug, name, category, shortDescription, description, research, shippingInfo, faq, featured, active, images
+- **Products tab**: slug, name, category (comma-separated for multiple), shortDescription, description, research, shippingInfo, faq, featured, active, images
 - **Variants tab**: productSlug, variantName, price (in dollars), sku, stock
 
 ## Research Use Disclaimer

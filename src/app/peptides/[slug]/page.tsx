@@ -17,7 +17,10 @@ export default async function ProductPage({ params }: PageProps) {
     notFound()
   }
 
-  const relatedProducts = await getCachedRelatedProducts(product.category.slug, product.slug)
+  const relatedProducts = await getCachedRelatedProducts(
+    product.categories?.map(c => c.slug) || [product.category.slug],
+    product.slug
+  )
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bestexpresspeptides.com"
   const firstVariant = product.variants[0]
   const lowestPrice = firstVariant?.price || 0
