@@ -48,4 +48,23 @@ Currently order notification emails are sent via Resend's testing mode, which li
 
 ---
 
+### 4. Automatic Inventory Management on Checkout
+**Priority:** High
+**Status:** Planned
+
+Automatically track and update stock levels when orders are placed, and prevent customers from ordering out-of-stock items.
+
+**How it would work:**
+- When an order is submitted, the site writes back to the Google Sheet to decrease the stock values in the Variants tab
+- Before checkout, stock is checked against the requested quantities — if an item is out of stock or insufficient quantity is available, the order is blocked with a clear message
+- Products with zero stock are shown as "Out of Stock" on the product page with the add-to-cart button disabled
+- Optional: low-stock alerts sent to the admin when inventory drops below a threshold
+
+**Implementation notes:**
+- Requires write access to the Google Sheet (already available via the existing Google Sheets integration)
+- Stock check should happen server-side at checkout time to avoid race conditions
+- The product cache should reflect updated stock after a write-back
+
+---
+
 *Add new features below this line.*
