@@ -14,6 +14,7 @@ NEXTAUTH_SECRET = "peptidelabs-secret-key-change-in-production-123456"
 NEXTAUTH_URL = "https://localhost:5000"
 NEXT_PUBLIC_GA_ID = "G-XXXXXXXXXX"
 GOOGLE_SHEET_ID = "1kUInxIBWDL2XdSS5WeRtrRhYzxHYzWVUiU8vNjY8dHA"
+NEXT_PUBLIC_GOOGLE_SHEET_ID = "1kUInxIBWDL2XdSS5WeRtrRhYzxHYzWVUiU8vNjY8dHA"
 
 [workflows]
 runButton = "Project"
