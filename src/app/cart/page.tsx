@@ -120,12 +120,16 @@ export default function CartPage() {
                           </button>
                           <span className="px-4 py-2 min-w-[50px] text-center">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                            className="p-2 hover:bg-gray-100"
+                            onClick={() => updateQuantity(item.variantId, Math.min(item.stock || 999, item.quantity + 1))}
+                            className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={item.stock !== undefined && item.quantity >= item.stock}
                           >
                             <Plus className="h-4 w-4" />
                           </button>
                         </div>
+                        {item.stock !== undefined && item.quantity >= item.stock && (
+                          <span className="text-xs text-amber-600">Max quantity reached</span>
+                        )}
                         <button
                           onClick={() => removeItem(item.variantId)}
                           className="text-red-500 hover:text-red-700 p-2"

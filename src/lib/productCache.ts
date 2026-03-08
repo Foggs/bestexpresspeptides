@@ -448,6 +448,157 @@ export async function getCachedRelatedProducts(
     }))
 }
 
+export interface StockCheckItem {
+  slug: string
+  variantName: string
+  quantity: number
+}
+
+export interface StockCheckResult {
+  success: boolean
+  insufficientItems: {
+    slug: string
+    variantName: string
+    requested: number
+    available: number
+  }[]
+}
+
+export async function checkStock(items: StockCheckItem[]): Promise<StockCheckResult> {
+  const sheets = await getUncachableGoogleSheetClient()
+
+  const variantsResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: 'Variants!A:E',
+  })
+
+  const rows = variantsResponse.data.values || []
+  if (rows.length < 2) {
+    return { success: false, insufficientItems: items.map(i => ({ ...i, requested: i.quantity, available: 0 })) }
+  }
+
+  const headers = rows[0].map((h: string) => h.trim().toLowerCase())
+  const variantHeaderMapLocal: Record<string, string> = {
+    'productslug': 'productSlug',
+    'product slug': 'productSlug',
+    'variantname': 'variantName',
+    'variant name': 'variantName',
+    'variant': 'variantName',
+    'stock': 'stock',
+  }
+
+  const variants = rows.slice(1).map((row: string[]) => {
+    const obj: any = {}
+    headers.forEach((header: string, index: number) => {
+      const mapped = variantHeaderMapLocal[header] || header
+      obj[mapped] = row[index] || ''
+    })
+    return obj
+  })
+
+  const insufficientItems: StockCheckResult['insufficientItems'] = []
+
+  for (const item of items) {
+    const variant = variants.find((v: any) =>
+      v.productSlug?.trim().toLowerCase() === item.slug.toLowerCase() &&
+      v.variantName?.trim().toLowerCase() === item.variantName.toLowerCase()
+    )
+
+    const available = variant ? parseInt(variant.stock) || 0 : 0
+
+    if (available < item.quantity) {
+      insufficientItems.push({
+        slug: item.slug,
+        variantName: item.variantName,
+        requested: item.quantity,
+        available,
+      })
+    }
+  }
+
+  return {
+    success: insufficientItems.length === 0,
+    insufficientItems,
+  }
+}
+
+export interface DecrementResult {
+  success: boolean
+  lowStockWarnings: { productSlug: string; variantName: string; remainingStock: number }[]
+  error?: string
+}
+
+const LOW_STOCK_THRESHOLD = 5
+
+export async function decrementStock(items: StockCheckItem[]): Promise<DecrementResult> {
+  const sheets = await getUncachableGoogleSheetClient()
+
+  const variantsResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId: SPREADSHEET_ID,
+    range: 'Variants!A:E',
+  })
+
+  const rows = variantsResponse.data.values || []
+  if (rows.length < 2) {
+    return { success: false, lowStockWarnings: [], error: 'No variant data found' }
+  }
+
+  const headers = rows[0].map((h: string) => h.trim().toLowerCase())
+  const slugCol = headers.indexOf('productslug') !== -1 ? headers.indexOf('productslug') : headers.indexOf('product slug')
+  const nameCol = headers.indexOf('variantname') !== -1 ? headers.indexOf('variantname') : (headers.indexOf('variant name') !== -1 ? headers.indexOf('variant name') : headers.indexOf('variant'))
+  const stockCol = headers.indexOf('stock')
+
+  if (slugCol === -1 || stockCol === -1) {
+    return { success: false, lowStockWarnings: [], error: 'Could not find required columns in Variants sheet' }
+  }
+
+  const updates: { range: string; values: string[][] }[] = []
+  const lowStockWarnings: DecrementResult['lowStockWarnings'] = []
+
+  for (const item of items) {
+    for (let i = 1; i < rows.length; i++) {
+      const rowSlug = (rows[i][slugCol] || '').trim().toLowerCase()
+      const rowName = nameCol !== -1 ? (rows[i][nameCol] || '').trim().toLowerCase() : ''
+
+      if (rowSlug === item.slug.toLowerCase() && rowName === item.variantName.toLowerCase()) {
+        const currentStock = parseInt(rows[i][stockCol]) || 0
+        const newStock = Math.max(0, currentStock - item.quantity)
+
+        const colLetter = String.fromCharCode(65 + stockCol)
+        updates.push({
+          range: `Variants!${colLetter}${i + 1}`,
+          values: [[String(newStock)]],
+        })
+
+        if (newStock <= LOW_STOCK_THRESHOLD) {
+          lowStockWarnings.push({
+            productSlug: item.slug,
+            variantName: item.variantName,
+            remainingStock: newStock,
+          })
+        }
+        break
+      }
+    }
+  }
+
+  if (updates.length === 0) {
+    return { success: true, lowStockWarnings: [] }
+  }
+
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId: SPREADSHEET_ID,
+    requestBody: {
+      valueInputOption: 'RAW',
+      data: updates,
+    },
+  })
+
+  clearCache()
+
+  return { success: true, lowStockWarnings }
+}
+
 export async function getCachedCategories(): Promise<CachedCategory[]> {
   const allProducts = await getCache()
   const activeProducts = allProducts.filter(p => p.active)

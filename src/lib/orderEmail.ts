@@ -143,6 +143,73 @@ function buildOrderEmailHtml(data: OrderEmailData): string {
   `
 }
 
+export async function sendLowStockAlert(
+  warnings: { productSlug: string; variantName: string; remainingStock: number }[]
+): Promise<{ success: boolean; error?: string }> {
+  const adminEmail = process.env.ADMIN_EMAIL
+
+  if (!adminEmail) {
+    return { success: false, error: 'Admin email not configured' }
+  }
+
+  const warningRows = warnings.map(w => `
+    <tr>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e5e7eb; font-size: 14px;">${w.productSlug}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e5e7eb; font-size: 14px;">${w.variantName}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e5e7eb; font-size: 14px; text-align: center; font-weight: bold; color: ${w.remainingStock === 0 ? '#dc2626' : '#d97706'};">${w.remainingStock === 0 ? 'OUT OF STOCK' : w.remainingStock}</td>
+    </tr>
+  `).join('')
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #d97706; padding: 24px; border-radius: 8px 8px 0 0; text-align: center;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Low Stock Alert</h1>
+      <p style="color: #fef3c7; margin: 8px 0 0; font-size: 14px;">BestExpressPeptides Inventory</p>
+    </div>
+    <div style="background-color: #ffffff; padding: 24px; border-radius: 0 0 8px 8px;">
+      <p style="font-size: 14px; color: #374151; margin: 0 0 16px;">The following items have dropped below the low stock threshold (5 units) after a recent order:</p>
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background-color: #f9fafb;">
+            <th style="padding: 10px 12px; text-align: left; font-size: 12px; color: #6b7280; text-transform: uppercase;">Product</th>
+            <th style="padding: 10px 12px; text-align: left; font-size: 12px; color: #6b7280; text-transform: uppercase;">Variant</th>
+            <th style="padding: 10px 12px; text-align: center; font-size: 12px; color: #6b7280; text-transform: uppercase;">Remaining</th>
+          </tr>
+        </thead>
+        <tbody>${warningRows}</tbody>
+      </table>
+    </div>
+    <div style="text-align: center; padding: 16px; color: #9ca3af; font-size: 12px;">
+      <p>This is an automated inventory alert from BestExpressPeptides.</p>
+    </div>
+  </div>
+</body>
+</html>`
+
+  try {
+    const { error } = await resend.emails.send({
+      from: 'BestExpressPeptides <onboarding@resend.dev>',
+      to: [adminEmail],
+      subject: `Low Stock Alert - ${warnings.length} item${warnings.length === 1 ? '' : 's'} need attention`,
+      html,
+    })
+
+    if (error) {
+      console.error('Resend low stock alert error:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error sending low stock alert:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}
+
 export async function sendOrderEmail(data: OrderEmailData): Promise<{ success: boolean; error?: string }> {
   const adminEmail = process.env.ADMIN_EMAIL
 

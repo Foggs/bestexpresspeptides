@@ -331,6 +331,11 @@ export default function CheckoutPage() {
       const data = await response.json()
 
       if (!response.ok) {
+        if (data.stockError && data.details) {
+          const stockMsg = "Some items are no longer available:\n\n" + data.details.join("\n") + "\n\nPlease update your cart and try again."
+          alert(stockMsg)
+          return
+        }
         throw new Error(data.error || "Failed to submit order")
       }
 

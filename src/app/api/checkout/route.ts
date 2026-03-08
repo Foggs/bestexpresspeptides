@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit"
 import { sendOrderEmail } from "@/lib/orderEmail"
+import { checkStock, decrementStock } from "@/lib/productCache"
 
 export async function POST(request: NextRequest) {
   const rateLimitResult = rateLimit(request, 50, 60000)
@@ -30,10 +31,53 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Complete shipping address is required" }, { status: 400 })
     }
 
+    const stockItems = items.map((item: any) => ({
+      slug: item.slug,
+      variantName: item.variantName,
+      quantity: item.quantity,
+    }))
+
+    const stockCheck = await checkStock(stockItems)
+
+    if (!stockCheck.success) {
+      const details = stockCheck.insufficientItems.map(item => {
+        if (item.available === 0) {
+          return `${item.variantName} is out of stock`
+        }
+        return `${item.variantName} — only ${item.available} available (you requested ${item.requested})`
+      })
+
+      return NextResponse.json(
+        {
+          error: "Some items in your cart are no longer available",
+          stockError: true,
+          insufficientItems: stockCheck.insufficientItems,
+          details,
+        },
+        {
+          status: 409,
+          headers: getRateLimitHeaders(rateLimitResult.remaining, 50),
+        }
+      )
+    }
+
     const subtotal = items.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0)
     const shipping = subtotal >= 20000 ? 0 : 1500
     const discount = coupon ? coupon.discount : 0
     const total = subtotal + shipping - discount
+
+    const decrementResult = await decrementStock(stockItems)
+
+    if (!decrementResult.success) {
+      console.error("Failed to decrement stock:", decrementResult.error)
+      return NextResponse.json(
+        { error: "Failed to reserve inventory. Please try again." },
+        {
+          status: 500,
+          headers: getRateLimitHeaders(rateLimitResult.remaining, 50),
+        }
+      )
+    }
 
     const emailResult = await sendOrderEmail({
       email,
@@ -52,14 +96,16 @@ export async function POST(request: NextRequest) {
     })
 
     if (!emailResult.success) {
-      console.error("Failed to send order email:", emailResult.error)
-      return NextResponse.json(
-        { error: "Failed to submit order. Please try again." },
-        { 
-          status: 500,
-          headers: getRateLimitHeaders(rateLimitResult.remaining, 50),
-        }
-      )
+      console.error("Failed to send order email (stock already decremented):", emailResult.error)
+    }
+
+    if (decrementResult.lowStockWarnings.length > 0) {
+      try {
+        const { sendLowStockAlert } = await import("@/lib/orderEmail")
+        await sendLowStockAlert(decrementResult.lowStockWarnings)
+      } catch (alertError) {
+        console.error("Failed to send low stock alert:", alertError)
+      }
     }
 
     return NextResponse.json(

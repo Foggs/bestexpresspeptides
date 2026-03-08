@@ -28,10 +28,11 @@ export const useCartStore = create<CartState>()(
         set((state) => {
           const existingItem = state.items.find(i => i.variantId === item.variantId)
           if (existingItem) {
+            const maxQty = item.stock || existingItem.stock || 999
             return {
               items: state.items.map(i =>
                 i.variantId === item.variantId
-                  ? { ...i, quantity: i.quantity + item.quantity }
+                  ? { ...i, quantity: Math.min(i.quantity + item.quantity, maxQty), stock: item.stock || i.stock }
                   : i
               ),
             }

@@ -83,9 +83,19 @@ Required environment variables:
 - Multi-category support (comma-separated in sheet, products appear in all relevant category filters)
 - Shopping cart with localStorage persistence
 - Email-based order submission (admin receives order details via Resend)
+- **Inventory management**: Stock validation at checkout, Google Sheets write-back on order, UI quantity caps, low-stock admin email alerts
 - User accounts with order history
 - Admin dashboard with product cache refresh
 - Legal pages (Terms, Privacy, Disclaimer, etc.)
+
+## Inventory Management
+- `checkStock()` and `decrementStock()` in `productCache.ts` read/write the Variants sheet directly
+- Checkout flow: validate stock → decrement stock → send order email
+- 409 response returned if any items have insufficient stock (with details per item)
+- UI caps quantity selectors at available stock on both product detail and cart pages
+- `CartItem` type includes `stock` field for client-side enforcement
+- Low stock threshold: 5 units — triggers separate admin email alert via `sendLowStockAlert()` in `orderEmail.ts`
+- Race condition note: Google Sheets lacks atomic transactions; the check-then-decrement window is tight but not locked
 
 ## Admin Access
 - URL: /admin

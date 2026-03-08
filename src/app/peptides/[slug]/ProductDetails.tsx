@@ -48,6 +48,7 @@ export function ProductDetails({ product, relatedProducts }: ProductDetailsProps
       quantity,
       image: product.images[0] || '',
       slug: product.slug,
+      stock: selectedVariant.stock,
     })
 
     toast({
@@ -145,7 +146,7 @@ export function ProductDetails({ product, relatedProducts }: ProductDetailsProps
               </span>
               {selectedVariant.stock > 0 ? (
                 <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  <CheckCircle className="h-3 w-3 mr-1" /> In Stock
+                  <CheckCircle className="h-3 w-3 mr-1" /> {selectedVariant.stock} in stock
                 </Badge>
               ) : (
                 <Badge variant="destructive">Out of Stock</Badge>
@@ -163,8 +164,9 @@ export function ProductDetails({ product, relatedProducts }: ProductDetailsProps
                 </button>
                 <span className="px-4 py-2 min-w-[50px] text-center">{quantity}</span>
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="p-2 hover:bg-gray-100"
+                  onClick={() => setQuantity(Math.min(selectedVariant.stock, quantity + 1))}
+                  className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={quantity >= selectedVariant.stock}
                 >
                   <Plus className="h-4 w-4" />
                 </button>
