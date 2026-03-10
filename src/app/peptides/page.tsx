@@ -54,7 +54,7 @@ export default async function PeptidesPage({ searchParams }: PageProps) {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          <aside className="lg:w-64 shrink-0">
+          <aside className={`lg:w-64 shrink-0 ${category ? 'order-2 lg:order-1' : ''}`}>
             <div className="sticky top-24 space-y-6">
               <div>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
@@ -94,7 +94,7 @@ export default async function PeptidesPage({ searchParams }: PageProps) {
             </div>
           </aside>
 
-          <div className="flex-1">
+          <div className={`flex-1 ${category ? 'order-1 lg:order-2' : ''}`}>
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <form className="relative flex-1" action="/peptides" method="GET">
                 {category && <input type="hidden" name="category" value={category} />}
