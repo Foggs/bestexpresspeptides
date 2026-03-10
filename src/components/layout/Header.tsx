@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { FlaskIcon, CartIcon, MenuIcon, CloseIcon, UserIcon } from "@/components/icons"
+import { Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/store/cart"
 import { useSession, signIn, signOut } from "next-auth/react"
@@ -38,6 +39,12 @@ export function Header() {
                 </Button>
               </div>
             ) : null}
+
+            <Link href="/" aria-label="Home">
+              <Button variant="outline" size="icon" aria-label="Home">
+                <Home size={20} />
+              </Button>
+            </Link>
 
             <Link href="/cart" className="relative" aria-label={`Shopping cart${itemCount > 0 ? `, ${itemCount} items` : ''}`}>
               <Button variant="outline" size="icon" aria-label="View cart">
