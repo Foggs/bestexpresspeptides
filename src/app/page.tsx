@@ -1,11 +1,12 @@
+import { Suspense } from "react"
 import { Metadata } from "next"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { ProductCard } from "@/components/products/ProductCard"
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/seo/JsonLd"
-import { getCachedFeaturedProducts, getCachedCategories } from "@/lib/productCache"
+import { FeaturedProducts, FeaturedProductsSkeleton } from "@/components/home/FeaturedProducts"
+import { BrowseByCategory, CategoriesSkeleton } from "@/components/home/BrowseByCategory"
 import { 
   FlaskConical, 
   Shield, 
@@ -14,7 +15,6 @@ import {
   Microscope, 
   ArrowRight,
   CheckCircle,
-  Beaker
 } from "lucide-react"
 
 export const metadata: Metadata = {
@@ -28,12 +28,7 @@ export const metadata: Metadata = {
   keywords: "research peptides, laboratory peptides, peptide research, scientific peptides, USA peptides, HPLC verified peptides",
 }
 
-export default async function HomePage() {
-  const [featuredProducts, categories] = await Promise.all([
-    getCachedFeaturedProducts(),
-    getCachedCategories(),
-  ])
-
+export default function HomePage() {
   return (
     <>
       <OrganizationJsonLd />
@@ -110,57 +105,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {featuredProducts.length > 0 && (
-        <section className="py-16">
-          <div className="container-custom">
-            <div className="flex items-center justify-between mb-12">
-              <div>
-                <h2 className="text-3xl font-bold mb-2">Featured Peptides</h2>
-                <p className="text-muted-foreground">Our most popular research compounds</p>
-              </div>
-              <Button asChild variant="outline">
-                <Link href="/peptides">
-                  View All
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      <Suspense fallback={<FeaturedProductsSkeleton />}>
+        <FeaturedProducts />
+      </Suspense>
 
-      {categories.length > 0 && (
-        <section className="py-16 bg-gray-50">
-          <div className="container-custom">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Browse by Category</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Explore our research peptide categories, each designed for specific areas of scientific study.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {categories.map((category) => (
-                <Link key={category.id} href={`/peptides?category=${category.slug}`}>
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-                    <CardContent className="p-6 text-center">
-                      <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                        <Beaker className="h-6 w-6 text-primary" />
-                      </div>
-                      <h3 className="font-semibold mb-1">{category.name}</h3>
-                      <p className="text-sm text-muted-foreground">{category._count.products} products</p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      <Suspense fallback={<CategoriesSkeleton />}>
+        <BrowseByCategory />
+      </Suspense>
 
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
