@@ -480,7 +480,6 @@ export default function ProductsPage() {
           updated.sort((a, b) => a.name.localeCompare(b.name))
           return updated
         })
-        fetchProductOptions()
       } else {
         setSaveResult({
           success: false,
