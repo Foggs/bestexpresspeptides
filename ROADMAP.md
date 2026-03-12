@@ -71,4 +71,56 @@ Photorealistic research peptide vial, clean studio lighting, centered compositio
 
 ---
 
+
+### 4. AI Thumbnail Generation for Products (Revised)
+
+**Priority:** Medium
+
+**Status:** Planned
+
+Generate high-fidelity product thumbnails using a "Master Blank" Image-to-Image (Img2Img) workflow. This ensures 100% consistency in vial shape, lighting, and background across the entire catalog, changing only the text on the label.
+
+**How it would work:**
+
+* **The Anchor:** A high-resolution "Master Blank" image of a peptide vial with a clean white label is stored in Google Cloud Storage.
+* **The API:** A Next.js API endpoint (`/api/admin/generate-product-image`) triggers the Cloud Run worker.
+* **The Logic:** The worker calls **Vertex AI Imagen 3** using the "Edit" (Img2Img) capability. It provides the Master Blank as a reference and prompts the AI to overlay the specific peptide name onto the label area.
+* **Storage:** The resulting image is saved to `public/product-images/{slug}.png` in the Replit environment.
+* **Sync:** The relative URL is written back to the Google Sheet for the admin to review.
+
+**Prompt Strategy (Img2Img):**
+
+* **Reference Image:** `master-blank-vial.png`
+* **Positive Prompt:** "Using the provided reference image of a research vial, add the text '[PEPTIDE NAME]' in a clean, black, sans-serif font onto the center of the white label. Maintain the exact studio lighting, white background, and matte silver cap from the original image. Ensure the text follows the natural curve of the vial label."
+* **Negative Prompt:** "syringes, needles, hands, blue lighting, shadows on background, blurry text, medical symbols, people, distorted vial shape."
+
+**Technical Implementation Details:**
+
+* **Tech Stack:** Vertex AI Imagen 3 (Image-to-Image capability).
+* **Consistency:** Set `imagePromptWeight` (or equivalent influence parameter) to **0.8 or higher** to prevent the AI from changing the vial’s geometry.
+* **Memory Management:** Stream the base image from GCS to the AI and the result back to Replit without storing large buffers in memory.
+* **Fallback:** In the event of an AI text rendering failure or safety filter flag, generate a standard SVG placeholder using the product name.
+
+---
+
+### 5. Affiliate Management System
+
+**Priority:** Medium/High
+
+**Status:** Planned
+
+Implement a lightweight, performance-focused affiliate tracking system using Next.js Middleware and Google Sheets for administrative management.
+
+**How it would work:**
+
+* **Tracking:** A Next.js Middleware detects a `?ref=ID` query parameter in the URL and sets a 30-day, secure, HTTP-only cookie (`aff_ref`).
+* **Attribution:** During checkout, the system reads the cookie and attaches the Affiliate ID to the order record in PostgreSQL and the Google Sheet.
+* **Management:** A new `Affiliates` tab in the Google Sheet serves as the "Source of Truth" for partner names, status (Active/Inactive), and commission rates.
+* **Admin UI:** An "Affiliates" view in the Admin Dashboard displays referral sales and allows for the generation of new affiliate IDs.
+
+**Technical Implementation Details:**
+
+* **Security:** Use `SameSite=Lax` for cookies to ensure tracking functionality across navigation while maintaining security standards.
+* **Efficiency:** Do not query the database for affiliate information on every page load; verify the `aff_ref` ID exclusively during the final checkout process.
+* **Logic:** Utilize "Last Click" attribution—the most recent affiliate link clicked by the user receives the credit for the sale.
 *Add new features below this line.*
