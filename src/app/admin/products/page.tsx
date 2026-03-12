@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, LogOut, RefreshCw, ExternalLink, CheckCircle, AlertCircle, Clock, PlusCircle } from "lucide-react"
+import { ArrowLeft, LogOut, RefreshCw, ExternalLink, CheckCircle, AlertCircle, Clock, PlusCircle, Trash2 } from "lucide-react"
 
 interface AdminUser {
   id: string
@@ -39,6 +39,19 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true)
   const [newProductName, setNewProductName] = useState("")
   const [addingProduct, setAddingProduct] = useState(false)
+  const [variants, setVariants] = useState<Array<{ id: number; variantName: string; price: string; stock: string }>>([])
+
+  const addVariant = () => {
+    setVariants((prev) => [...prev, { id: Date.now(), variantName: "", price: "", stock: "" }])
+  }
+
+  const removeVariant = (id: number) => {
+    setVariants((prev) => prev.filter((v) => v.id !== id))
+  }
+
+  const updateVariant = (id: number, field: string, value: string) => {
+    setVariants((prev) => prev.map((v) => (v.id === id ? { ...v, [field]: value } : v)))
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -189,19 +202,70 @@ export default function ProductsPage() {
                 setAddingProduct(true)
                 setTimeout(() => setAddingProduct(false), 500)
               }}
-              className="flex items-end gap-4"
+              className="space-y-4"
             >
-              <div className="flex-1 space-y-1">
-                <Label htmlFor="product-name">Product Name</Label>
-                <Input
-                  id="product-name"
-                  placeholder="Enter product name"
-                  value={newProductName}
-                  onChange={(e) => setNewProductName(e.target.value)}
-                />
+              <div className="flex items-end gap-4">
+                <div className="flex-1 space-y-1">
+                  <Label htmlFor="product-name">Product Name</Label>
+                  <Input
+                    id="product-name"
+                    placeholder="Enter product name"
+                    value={newProductName}
+                    onChange={(e) => setNewProductName(e.target.value)}
+                  />
+                </div>
+                <Button type="submit" disabled={addingProduct || !newProductName.trim()}>
+                  {addingProduct ? "Submitting..." : "Submit"}
+                </Button>
               </div>
-              <Button type="submit" disabled={addingProduct || !newProductName.trim()}>
-                {addingProduct ? "Submitting..." : "Submit"}
+
+              {variants.length > 0 && (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-3 text-xs font-medium text-muted-foreground px-1">
+                    <span>Variant Name</span>
+                    <span>Price ($)</span>
+                    <span>Stock</span>
+                    <span />
+                  </div>
+                  {variants.map((variant) => (
+                    <div key={variant.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-3 items-center">
+                      <Input
+                        placeholder="e.g. 5mg"
+                        value={variant.variantName}
+                        onChange={(e) => updateVariant(variant.id, "variantName", e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={variant.price}
+                        onChange={(e) => updateVariant(variant.id, "price", e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="0"
+                        value={variant.stock}
+                        onChange={(e) => updateVariant(variant.id, "stock", e.target.value)}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeVariant(variant.id)}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Button type="button" variant="outline" size="sm" onClick={addVariant}>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                + Add Variant
               </Button>
             </form>
           </CardContent>
