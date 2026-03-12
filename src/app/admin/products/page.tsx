@@ -159,6 +159,7 @@ export default function ProductsPage() {
     e.preventDefault()
     setAddingProduct(true)
     setSubmittedProduct(null)
+    setFormErrors({})
 
     const errors: FormErrors = {}
 
@@ -182,11 +183,9 @@ export default function ProductsPage() {
           if (data.exists) {
             errors.productName = "A product with this name already exists in the Google Sheet."
           }
-        } else {
-          errors.productName = "Could not verify product name. Please try again."
         }
       } catch {
-        errors.productName = "Could not verify product name. Please try again."
+        // If the check fails, allow submission to proceed
       }
     }
 
