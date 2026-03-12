@@ -28,6 +28,11 @@ interface RefreshResult {
   details?: string
 }
 
+interface FormErrors {
+  productName?: string
+  variants?: string
+}
+
 export default function ProductsPage() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -43,6 +48,7 @@ export default function ProductsPage() {
     { id: 1, variantName: "", price: "", stock: "" },
   ])
   const [submittedProduct, setSubmittedProduct] = useState<{ name: string; variants: Array<{ variantName: string; price: string; stock: string }> } | null>(null)
+  const [formErrors, setFormErrors] = useState<FormErrors>({})
 
   const addVariant = () => {
     setVariants((prev) => [...prev, { id: Date.now(), variantName: "", price: "", stock: "" }])
@@ -50,10 +56,18 @@ export default function ProductsPage() {
 
   const removeVariant = (id: number) => {
     setVariants((prev) => prev.filter((v) => v.id !== id))
+    setFormErrors((prev) => ({ ...prev, variants: undefined }))
   }
 
   const updateVariant = (id: number, field: string, value: string) => {
     setVariants((prev) => prev.map((v) => (v.id === id ? { ...v, [field]: value } : v)))
+    setFormErrors((prev) => ({ ...prev, variants: undefined }))
+  }
+
+  const handleProductNameChange = (value: string) => {
+    setNewProductName(value)
+    setFormErrors((prev) => ({ ...prev, productName: undefined }))
+    setSubmittedProduct(null)
   }
 
   useEffect(() => {
@@ -141,6 +155,53 @@ export default function ProductsPage() {
     return date.toLocaleDateString() + " " + date.toLocaleTimeString()
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAddingProduct(true)
+    setSubmittedProduct(null)
+
+    const errors: FormErrors = {}
+
+    const hasFilledVariant = variants.some(
+      (v) => v.variantName.trim() !== "" && v.price.trim() !== "" && v.stock.trim() !== ""
+    )
+    if (!hasFilledVariant) {
+      errors.variants = "At least one variant must have all fields filled out (Variant Name, Price, and Stock)."
+    }
+
+    if (newProductName.trim()) {
+      try {
+        const res = await fetch(
+          `/api/admin/check-product-name?name=${encodeURIComponent(newProductName.trim())}`,
+          {
+            headers: { Authorization: `Bearer ${adminToken}` },
+          }
+        )
+        if (res.ok) {
+          const data = await res.json()
+          if (data.exists) {
+            errors.productName = "A product with this name already exists in the Google Sheet."
+          }
+        } else {
+          errors.productName = "Could not verify product name. Please try again."
+        }
+      } catch {
+        errors.productName = "Could not verify product name. Please try again."
+      }
+    }
+
+    setFormErrors(errors)
+
+    if (Object.keys(errors).length === 0) {
+      setSubmittedProduct({
+        name: newProductName.trim(),
+        variants: variants.map(({ variantName, price, stock }) => ({ variantName, price, stock })),
+      })
+    }
+
+    setAddingProduct(false)
+  }
+
   if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center py-8">
@@ -199,31 +260,29 @@ export default function ProductsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                setAddingProduct(true)
-                setSubmittedProduct({
-                  name: newProductName.trim(),
-                  variants: variants.map(({ variantName, price, stock }) => ({ variantName, price, stock })),
-                })
-                setTimeout(() => setAddingProduct(false), 500)
-              }}
-              className="space-y-4"
-            >
-              <div className="flex items-end gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex items-start gap-4">
                 <div className="flex-1 space-y-1">
                   <Label htmlFor="product-name">Product Name</Label>
                   <Input
                     id="product-name"
                     placeholder="Enter product name"
                     value={newProductName}
-                    onChange={(e) => setNewProductName(e.target.value)}
+                    onChange={(e) => handleProductNameChange(e.target.value)}
+                    className={formErrors.productName ? "border-red-500 focus-visible:ring-red-500" : ""}
                   />
+                  {formErrors.productName && (
+                    <div className="flex items-center gap-1.5 text-sm text-red-600 mt-1">
+                      <AlertCircle className="h-4 w-4 shrink-0" />
+                      <span>{formErrors.productName}</span>
+                    </div>
+                  )}
                 </div>
-                <Button type="submit" disabled={addingProduct || !newProductName.trim() || variants.length === 0}>
-                  {addingProduct ? "Submitting..." : "Submit"}
-                </Button>
+                <div className="pt-6">
+                  <Button type="submit" disabled={addingProduct || !newProductName.trim()}>
+                    {addingProduct ? "Checking..." : "Submit"}
+                  </Button>
+                </div>
               </div>
 
               {variants.length > 0 && (
@@ -267,6 +326,13 @@ export default function ProductsPage() {
                       </Button>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {formErrors.variants && (
+                <div className="flex items-center gap-1.5 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{formErrors.variants}</span>
                 </div>
               )}
 
