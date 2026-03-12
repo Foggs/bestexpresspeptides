@@ -106,9 +106,9 @@ function slugify(text: string): string {
   return text
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-z0-9]/g, '-')
     .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
 }
 
 function generateId(prefix: string, key: string): string {
@@ -250,11 +250,12 @@ async function fetchFromSheet(): Promise<CachedProductFull[]> {
         return { id, name, slug }
       })
 
-      const productId = generateId('prod', p.slug)
+      const normalizedSlug = slugify(p.slug)
+      const productId = generateId('prod', normalizedSlug)
       const productVariants = normalizedVariants
-        .filter((v: SheetVariant) => v.productSlug?.trim() === p.slug?.trim())
+        .filter((v: SheetVariant) => slugify(v.productSlug || '') === normalizedSlug)
         .map((v: SheetVariant) => ({
-          id: generateId('var', v.sku || `${p.slug}-${v.variantName}`),
+          id: generateId('var', v.sku || `${normalizedSlug}-${v.variantName}`),
           name: v.variantName || '',
           price: parsePriceToCents(v.price),
           sku: v.sku || '',
@@ -266,7 +267,7 @@ async function fetchFromSheet(): Promise<CachedProductFull[]> {
       return {
         id: productId,
         name: p.name,
-        slug: p.slug,
+        slug: normalizedSlug,
         description: p.description || '',
         shortDescription: p.shortDescription || null,
         research: p.research || null,
@@ -499,8 +500,9 @@ export async function checkStock(items: StockCheckItem[]): Promise<StockCheckRes
   const insufficientItems: StockCheckResult['insufficientItems'] = []
 
   for (const item of items) {
+    const itemSlug = slugify(item.slug)
     const variant = variants.find((v: any) =>
-      v.productSlug?.trim().toLowerCase() === item.slug.toLowerCase() &&
+      slugify(v.productSlug || '') === itemSlug &&
       v.variantName?.trim().toLowerCase() === item.variantName.toLowerCase()
     )
 
@@ -560,7 +562,7 @@ export async function decrementStock(items: StockCheckItem[]): Promise<Decrement
       const rowSlug = (rows[i][slugCol] || '').trim().toLowerCase()
       const rowName = nameCol !== -1 ? (rows[i][nameCol] || '').trim().toLowerCase() : ''
 
-      if (rowSlug === item.slug.toLowerCase() && rowName === item.variantName.toLowerCase()) {
+      if (slugify(rowSlug) === slugify(item.slug) && rowName === item.variantName.toLowerCase()) {
         const currentStock = parseInt(rows[i][stockCol]) || 0
         const newStock = Math.max(0, currentStock - item.quantity)
 

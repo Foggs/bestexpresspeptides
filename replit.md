@@ -89,6 +89,7 @@ Required environment variables:
 - Admin dashboard with product cache refresh
 - **AI content generation**: Gemini-powered product description, short description, and research summary generation via `/api/admin/generate-product-content` with model fallback (gemini-2.0-flash → gemini-1.5-flash → gemini-2.0-flash-lite) and compliance-safe prompting
 - **AI image generation**: Product thumbnail generation via `/api/admin/generate-product-image` — uses Replit's built-in AI image generation (no external API key needed) with SVG-based branded placeholder fallback for new products. Saves PNG to `public/product-images/{slug}.png` and writes URL to sheet's `images` column. All 24 products pre-generated with AI images.
+- **Slug standardization**: All product slugs normalized to lowercase-hyphenated format (e.g. "dsip 15" → "dsip-15", "2x alpha cjc/ipa" → "2x-alpha-cjc-ipa"). Normalization happens at cache load time via `slugify()` — no sheet edits needed. Image filenames and URLs match the normalized slugs.
 - Legal pages (Terms, Privacy, Disclaimer, etc.)
 
 ## Inventory Management

@@ -124,10 +124,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const safeSlugRegex = /^[a-z0-9][a-z0-9 /\-]*$/
+    const safeSlugRegex = /^[a-z0-9][a-z0-9-]*$/
     if (!safeSlugRegex.test(slug.trim())) {
       return NextResponse.json(
-        { success: false, error: "Invalid slug format" },
+        { success: false, error: "Invalid slug format. Use lowercase letters, numbers, and hyphens only." },
         { status: 400 }
       )
     }
@@ -180,7 +180,8 @@ export async function POST(request: NextRequest) {
       )
     }
     for (let i = 1; i < rows.length; i++) {
-      if ((rows[i][slugCol] || "").trim() === resolvedSlug) {
+      const sheetSlug = (rows[i][slugCol] || "").trim().toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+      if (sheetSlug === resolvedSlug) {
         targetRowIndex = i
         resolvedName = rows[i][colIndex["name"]] || resolvedSlug
         break
@@ -193,8 +194,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const safeFilename = resolvedSlug.replace(/[/\\]/g, "_")
-    const filename = `${safeFilename}.png`
+    const filename = `${resolvedSlug}.png`
     const imageDir = path.join(process.cwd(), "public", "product-images")
 
     if (!fs.existsSync(imageDir)) {
