@@ -4,7 +4,9 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, LogOut, RefreshCw, ExternalLink, CheckCircle, AlertCircle, Clock } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { ArrowLeft, LogOut, RefreshCw, ExternalLink, CheckCircle, AlertCircle, Clock, PlusCircle } from "lucide-react"
 
 interface AdminUser {
   id: string
@@ -35,6 +37,8 @@ export default function ProductsPage() {
   const [refreshing, setRefreshing] = useState(false)
   const [refreshResult, setRefreshResult] = useState<RefreshResult | null>(null)
   const [loading, setLoading] = useState(true)
+  const [newProductName, setNewProductName] = useState("")
+  const [addingProduct, setAddingProduct] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -170,6 +174,38 @@ export default function ProductsPage() {
             </Button>
           </div>
         </div>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PlusCircle className="h-5 w-5" />
+              Add New Product
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                setAddingProduct(true)
+                setTimeout(() => setAddingProduct(false), 500)
+              }}
+              className="flex items-end gap-4"
+            >
+              <div className="flex-1 space-y-1">
+                <Label htmlFor="product-name">Product Name</Label>
+                <Input
+                  id="product-name"
+                  placeholder="Enter product name"
+                  value={newProductName}
+                  onChange={(e) => setNewProductName(e.target.value)}
+                />
+              </div>
+              <Button type="submit" disabled={addingProduct || !newProductName.trim()}>
+                {addingProduct ? "Submitting..." : "Submit"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
