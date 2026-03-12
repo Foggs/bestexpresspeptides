@@ -122,8 +122,8 @@ export async function POST(request: NextRequest) {
     }
 
     const productRow = [
-      productSlug,
       name.trim(),
+      productSlug,
       resolvedCategory,
       (shortDescription || "").trim(),
       (description || "").trim(),
