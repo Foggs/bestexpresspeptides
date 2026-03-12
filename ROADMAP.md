@@ -48,4 +48,27 @@ Currently order notification emails are sent via Resend's testing mode, which li
 
 ---
 
+### 4. AI Thumbnail Generation for Products
+**Priority:** Medium
+**Status:** Planned
+
+Generate product thumbnail images using AI with a locked visual style (photorealistic vial, white background, studio lighting). The prompt template is fixed to maintain consistency across all products — only the peptide name changes per product.
+
+**How it would work:**
+- A new API endpoint (`/api/admin/generate-product-image`) accepts a product slug
+- It looks up the product name from the Google Sheet, constructs the locked vial prompt, and calls an AI image generation service
+- The generated PNG is saved to `public/product-images/{slug}.png`
+- The relative URL `/product-images/{slug}.png` is written back to the product's `images` column in the Google Sheet
+- The admin UI can trigger generation per product and preview the result immediately
+
+**Prompt template:**
+Photorealistic research peptide vial, clean studio lighting, centered composition, white background, glass vial with subtle reflections, minimal white label with peptide name, matte silver cap, professional laboratory product photography, square 1:1 format, no syringes, no medical symbols, no people.
+
+**Implementation notes:**
+- No external image hosting or Cloud Storage required — images are served from the Next.js public folder
+- Could use Replit's built-in image generation or an external service (Gemini, DALL-E, etc.)
+- A placeholder SVG fallback should be generated if AI generation fails
+
+---
+
 *Add new features below this line.*
