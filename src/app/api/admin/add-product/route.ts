@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: "Products!A:K",
+      range: "Products",
       valueInputOption: "RAW",
       requestBody: {
         values: [productRow],
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: "Variants!A:E",
+      range: "Variants",
       valueInputOption: "RAW",
       requestBody: {
         values: variantRows,
