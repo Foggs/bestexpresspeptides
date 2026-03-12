@@ -6,6 +6,94 @@ import * as path from "path"
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID!
 
+const VIAL_PROMPT_TEMPLATE = `Product photography of a single research peptide vial labeled "{{PEPTIDE_NAME}}" on a clean white laboratory background. The vial has a silver aluminum crimp cap and a clear glass body with a small amount of white lyophilized powder inside. Professional studio lighting with soft shadows. The label is clean and minimal with the peptide name in dark navy text. Photorealistic, high resolution, centered composition.`
+
+function buildPrompt(peptideName: string): string {
+  return VIAL_PROMPT_TEMPLATE.replace("{{PEPTIDE_NAME}}", peptideName.toUpperCase())
+}
+
+async function generateImageWithGemini(peptideName: string): Promise<Buffer | null> {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) return null
+
+  const prompt = buildPrompt(peptideName)
+
+  const geminiModels = ["gemini-2.5-flash-image", "gemini-3-pro-image-preview"]
+  for (const model of geminiModels) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              responseModalities: ["IMAGE", "TEXT"],
+              responseMimeType: "text/plain",
+            },
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        console.error(`Gemini ${model} error: ${response.status} ${response.statusText}`)
+        continue
+      }
+
+      const data = await response.json()
+      const candidates = data?.candidates || []
+      for (const candidate of candidates) {
+        const parts = candidate?.content?.parts || []
+        for (const part of parts) {
+          if (part.inlineData?.mimeType?.startsWith("image/") && part.inlineData?.data) {
+            return Buffer.from(part.inlineData.data, "base64")
+          }
+        }
+      }
+      console.error(`Gemini ${model}: no image data in response`)
+    } catch (err) {
+      console.error(`Gemini ${model} generation failed:`, err)
+    }
+  }
+
+  const imagenModels = ["imagen-4.0-fast-generate-001", "imagen-4.0-generate-001"]
+  for (const model of imagenModels) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            instances: [{ prompt }],
+            parameters: {
+              sampleCount: 1,
+              aspectRatio: "1:1",
+            },
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        console.error(`Imagen ${model} error: ${response.status} ${response.statusText}`)
+        continue
+      }
+
+      const data = await response.json()
+      const predictions = data?.predictions || []
+      if (predictions.length > 0 && predictions[0].bytesBase64Encoded) {
+        return Buffer.from(predictions[0].bytesBase64Encoded, "base64")
+      }
+      console.error(`Imagen ${model}: no image data in response`)
+    } catch (err) {
+      console.error(`Imagen ${model} generation failed:`, err)
+    }
+  }
+
+  return null
+}
+
 async function generatePlaceholderImage(peptideName: string): Promise<Buffer> {
   const sharp = (await import("sharp")).default
 
@@ -115,7 +203,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { slug } = body
+    const { slug, force = false } = body
 
     if (!slug) {
       return NextResponse.json(
@@ -204,10 +292,18 @@ export async function POST(request: NextRequest) {
     const filePath = path.join(imageDir, filename)
     let generatedWith = "existing"
 
-    if (!fs.existsSync(filePath)) {
-      const imageBuffer = await generatePlaceholderImage(resolvedName)
-      fs.writeFileSync(filePath, imageBuffer)
-      generatedWith = "placeholder"
+    const shouldGenerate = force || !fs.existsSync(filePath)
+
+    if (shouldGenerate) {
+      const aiImage = await generateImageWithGemini(resolvedName)
+      if (aiImage) {
+        fs.writeFileSync(filePath, aiImage)
+        generatedWith = "gemini"
+      } else {
+        const placeholderBuffer = await generatePlaceholderImage(resolvedName)
+        fs.writeFileSync(filePath, placeholderBuffer)
+        generatedWith = "placeholder"
+      }
     }
 
     const imageUrl = `/product-images/${filename}`
@@ -235,6 +331,7 @@ export async function POST(request: NextRequest) {
       productName: resolvedName,
       imageUrl,
       generatedWith,
+      prompt: shouldGenerate ? buildPrompt(resolvedName) : undefined,
       writtenToSheet,
     })
   } catch (error) {
