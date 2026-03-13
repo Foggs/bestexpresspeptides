@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { name, category, shortDescription, description, research, variants } = body
+    const { name, categories, shortDescription, description, research, variants } = body
 
     if (!name || typeof name !== "string" || !name.trim()) {
       return NextResponse.json(
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     }
 
     const productSlug = slugify(name.trim())
-    const resolvedCategory = (category || "Research Peptide").trim()
+    const resolvedCategory = (categories || "Research Peptide").trim()
 
     const sheets = await getUncachableGoogleSheetClient()
 

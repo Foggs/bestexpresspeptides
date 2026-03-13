@@ -61,7 +61,7 @@ export default function ProductsPage() {
   const [submittedProduct, setSubmittedProduct] = useState<{ name: string; variants: Array<{ variantName: string; price: string; stock: string }> } | null>(null)
   const [formErrors, setFormErrors] = useState<FormErrors>({})
   const [generatingContent, setGeneratingContent] = useState(false)
-  const [generatedContent, setGeneratedContent] = useState<{ shortDescription: string; description: string; research: string } | null>(null)
+  const [generatedContent, setGeneratedContent] = useState<{ shortDescription: string; description: string; research: string; categories: string } | null>(null)
   const [contentError, setContentError] = useState<string | null>(null)
   const [savingProduct, setSavingProduct] = useState(false)
   const [saveResult, setSaveResult] = useState<{ success: boolean; message: string; slug?: string } | null>(null)
@@ -481,7 +481,7 @@ export default function ProductsPage() {
         },
         body: JSON.stringify({
           name: submittedProduct.name,
-          category: "Research Peptide",
+          categories: generatedContent.categories,
           shortDescription: generatedContent.shortDescription,
           description: generatedContent.description,
           research: generatedContent.research,
@@ -720,6 +720,16 @@ export default function ProductsPage() {
 
               {generatedContent && (
                 <>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Categories</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {generatedContent.categories.split(",").map((cat, i) => (
+                        <span key={i} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-300">
+                          {cat.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                   <div>
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Short Description</p>
                     <p className="text-sm text-green-900">{generatedContent.shortDescription}</p>

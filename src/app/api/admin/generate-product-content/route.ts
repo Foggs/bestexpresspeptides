@@ -27,10 +27,11 @@ STRICT COMPLIANCE RULES — YOU MUST FOLLOW ALL OF THESE:
 - Reference published research studies where applicable
 - Use phrases like "studies suggest", "research indicates", "has been investigated for"
 
-Generate a JSON object with exactly three fields:
+Generate a JSON object with exactly four fields:
 1. shortDescription: A concise 1-2 sentence summary suitable for product cards
 2. description: A detailed product description with markdown formatting
 3. research: A comprehensive research summary with markdown section headers
+4. categories: A comma-separated string of up to 3 relevant research/scientific categories that describe this peptide's primary use areas. Choose from categories like: Growth Hormone, Muscle & Recovery, Tissue Repair, Anti-Aging, Anti-Inflammatory, Neuroprotection, Immune Support, Metabolic, Antioxidant, Cardioprotection, Gastrointestinal, Sexual Health, Sleep & Recovery, Mitochondrial, Senolytic, Weight Management, Melanocortin, Telomere Support, Peptide Blends, Detoxification, Vitamins, GLP-1 Agonists. Use existing category names where possible. Example: "Tissue Repair, Anti-Aging, Anti-Inflammatory"
 
 All content must be factual, citation-aware, and written for a research audience.
 
@@ -145,6 +146,7 @@ export async function POST(request: NextRequest) {
       shortDescription: string
       description: string
       research: string
+      categories: string
     }
 
     try {
@@ -154,6 +156,10 @@ export async function POST(request: NextRequest) {
         { success: false, error: "Failed to parse AI response", raw: responseText },
         { status: 500 }
       )
+    }
+
+    if (!generated.categories) {
+      generated.categories = "Research Peptide"
     }
 
     if (!generated.shortDescription || !generated.description || !generated.research) {
