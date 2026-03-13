@@ -59,8 +59,9 @@ export default function AdminLogin() {
           )}
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <Label>Email</Label>
+              <Label htmlFor="login-email">Email</Label>
               <Input
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -69,8 +70,9 @@ export default function AdminLogin() {
               />
             </div>
             <div>
-              <Label>Password</Label>
+              <Label htmlFor="login-password">Password</Label>
               <Input
+                id="login-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

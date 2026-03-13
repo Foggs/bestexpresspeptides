@@ -17,9 +17,9 @@ test.describe('Admin Add New Product with AI Categories', () => {
       page.goto('/admin/login');
     });
 
-    await page.getByLabel(/email/i).fill('admin@test.com');
-    await page.getByLabel(/password/i).fill('admin');
-    await page.getByRole('button', { name: /sign in|log in|login/i }).click();
+    await page.locator('#login-email').fill('admin@test.com');
+    await page.locator('#login-password').fill('admin');
+    await page.getByRole('button', { name: /Login/i }).click();
     await page.waitForURL(/\/admin/, { timeout: 15000 });
 
     await page.goto('/admin/products');
