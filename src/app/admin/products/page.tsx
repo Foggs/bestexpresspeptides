@@ -335,6 +335,7 @@ export default function ProductsPage() {
           setVariantSubmitResult({ success: true, message: `${data.addedCount} variant(s) added to Google Sheet.` })
           setExistingVariants([{ id: Date.now(), variantName: "", price: "", stock: "" }])
           setSelectedProductSlug("")
+          setShowVariantSection(false)
         } else {
           setVariantSubmitResult({ success: false, message: data.error || "Failed to add variants." })
         }
