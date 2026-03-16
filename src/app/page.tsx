@@ -17,6 +17,8 @@ import {
   CheckCircle,
 } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: "BestExpressPeptides | Premium Research-Grade Peptides for Scientific Research",
   description: "Discover our comprehensive collection of laboratory-grade research peptides. 99%+ purity verified, fast shipping, and certificates of analysis. For research use only.",
