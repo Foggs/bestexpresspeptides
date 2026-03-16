@@ -194,7 +194,7 @@ export async function sendLowStockAlert(
 
   try {
     const { error } = await resend.emails.send({
-      from: 'BestExpressPeptides <onboarding@resend.dev>',
+      from: 'BestExpressPeptides <noreply@support.bestexprespeptides.com>',
       to: [adminEmail],
       subject: `Low Stock Alert - ${warnings.length} item${warnings.length === 1 ? '' : 's'} need attention`,
       html,
@@ -225,7 +225,7 @@ export async function sendOrderEmail(data: OrderEmailData): Promise<{ success: b
     const itemCount = data.items.reduce((sum, item) => sum + item.quantity, 0)
 
     const { data: result, error } = await resend.emails.send({
-      from: 'BestExpressPeptides <onboarding@resend.dev>',
+      from: 'BestExpressPeptides <noreply@support.bestexprespeptides.com>',
       to: [adminEmail],
       subject: `New Order - ${formatPrice(data.total)} (${itemCount} item${itemCount === 1 ? '' : 's'}) from ${data.shippingAddress.firstName} ${data.shippingAddress.lastName}`,
       html,
