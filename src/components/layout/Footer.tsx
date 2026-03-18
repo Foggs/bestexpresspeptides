@@ -20,10 +20,10 @@ export function Footer() {
                 <MailIcon size={16} />
                 <a href="mailto:support@bestexpresspeptides.com" className="hover:text-primary transition-colors">support@bestexpresspeptides.com</a>
               </div>
-              <div className="flex items-center gap-2 text-sm">
+              {/* <div className="flex items-center gap-2 text-sm">
                 <PhoneIcon size={16} />
                 <a href="tel:1-800-737-8433" className="hover:text-primary transition-colors">1-800-PEPTIDE</a>
-              </div>
+              </div> */}
             </address>
           </div>
 
