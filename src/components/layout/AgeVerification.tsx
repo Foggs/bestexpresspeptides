@@ -1,33 +1,36 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { FlaskIcon, WarningIcon } from "@/components/icons"
 
-let isVerified: boolean | null = null
-
-function checkVerified(): boolean {
-  if (isVerified !== null) return isVerified
-  if (typeof window === "undefined") return true
-  isVerified = sessionStorage.getItem("age-verified") === "true"
-  return isVerified
-}
+type VerificationState = "checking" | "verified" | "unverified"
 
 export function AgeVerification() {
-  const [verified, setVerified] = useState(() => checkVerified())
+  const [state, setState] = useState<VerificationState>("checking")
+
+  useEffect(() => {
+    const alreadyVerified = sessionStorage.getItem("age-verified") === "true"
+    setState(alreadyVerified ? "verified" : "unverified")
+  }, [])
 
   const handleVerify = useCallback(() => {
     sessionStorage.setItem("age-verified", "true")
-    isVerified = true
-    setVerified(true)
+    setState("verified")
   }, [])
 
   const handleDecline = useCallback(() => {
     window.location.href = "https://www.google.com"
   }, [])
 
-  if (verified) {
+  if (state === "checking") {
+    return (
+      <div className="fixed inset-0 z-[100] bg-white" aria-hidden="true" />
+    )
+  }
+
+  if (state === "verified") {
     return null
   }
 

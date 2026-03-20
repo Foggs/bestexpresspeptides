@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FlaskIcon, CartIcon, MenuIcon, CloseIcon, UserIcon } from "@/components/icons"
 import { Home, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,8 +10,14 @@ import { useSession, signIn, signOut } from "next-auth/react"
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { items, _hasHydrated } = useCartStore()
-  const itemCount = _hasHydrated ? items.reduce((acc, item) => acc + item.quantity, 0) : 0
+  const [mounted, setMounted] = useState(false)
+  const { items } = useCartStore()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const itemCount = mounted ? items.reduce((acc, item) => acc + item.quantity, 0) : 0
   const { data: session } = useSession()
 
   return (

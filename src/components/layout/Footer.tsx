@@ -59,7 +59,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} BestExpressPeptides. All rights reserved.</p>
+          <p suppressHydrationWarning>&copy; {new Date().getFullYear()} BestExpressPeptides. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <span>Secure Checkout</span>
             <span>|</span>
