@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -84,20 +83,10 @@ export default function CartPage() {
               <Card key={item.variantId}>
                 <CardContent className="p-4">
                   <div className="flex gap-4">
-                    <div className="relative w-24 h-24 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                      {item.image ? (
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-gray-300">
-                          {item.name.charAt(0)}
-                        </div>
-                      )}
-                    </div>
+                    <div
+                      className="w-24 h-24 rounded-md shrink-0 bg-cover bg-center"
+                      style={{ backgroundImage: "url('/images/peptide-bckgrd.png')" }}
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between gap-4">
                         <div>

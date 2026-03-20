@@ -1,12 +1,12 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatPrice } from "@/lib/utils"
 import { ShoppingCart } from "lucide-react"
+import { PeptideHero } from "@/components/products/PeptideHero"
 
 interface ProductCardProps {
   product: {
@@ -33,31 +33,13 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <Link href={`/peptides/${product.slug}`} title={`View ${product.name} details`}>
-        <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
-          {product.images[0] ? (
-            <Image
-              src={product.images[0]}
-              alt={`${product.name} - Research grade peptide`}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-              quality={80}
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-6xl font-bold text-gray-200" aria-hidden="true">
-                {product.name.charAt(0)}
-              </div>
-            </div>
-          )}
-          <Badge className="absolute top-3 left-3" variant="secondary">
-            {product.category.name}
-          </Badge>
-        </div>
+        <PeptideHero name={product.name} />
       </Link>
 
       <CardContent className="p-4">
+        <Badge variant="secondary" className="mb-2">
+          {product.category.name}
+        </Badge>
         <Link href={`/peptides/${product.slug}`}>
           <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
             {product.name}
