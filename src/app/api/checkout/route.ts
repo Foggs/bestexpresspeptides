@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit"
 import { sendOrderEmail } from "@/lib/orderEmail"
-import { checkStock, decrementStock } from "@/lib/productCache"
+import { checkStock, decrementStock, getCachedProductBySlug } from "@/lib/productCache"
 
 const ORDER_NUMBER_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
@@ -30,8 +30,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { items, email, shippingAddress, coupon } = body
 
-    if (!items || items.length === 0) {
+    if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: "No items in cart" }, { status: 400 })
+    }
+
+    for (const item of items) {
+      if (!item.slug || !item.variantName) {
+        return NextResponse.json({ error: "Each item must have a slug and variantName" }, { status: 400 })
+      }
+      if (!Number.isInteger(item.quantity) || item.quantity < 1) {
+        return NextResponse.json({ error: "Each item quantity must be a positive integer" }, { status: 400 })
+      }
     }
 
     if (!email || !email.includes("@")) {
@@ -72,7 +81,41 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const subtotal = items.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0)
+    const verifiedItems: { slug: string; variantName: string; quantity: number; price: number; productId: string; variantId: string; name: string }[] = []
+    for (const item of items) {
+      const product = await getCachedProductBySlug(item.slug)
+      if (!product) {
+        return NextResponse.json(
+          { error: `Product not found: ${item.slug}` },
+          { status: 400, headers: getRateLimitHeaders(rateLimitResult.remaining, 50) }
+        )
+      }
+      const variant = product.variants.find(
+        (v) => v.name.toLowerCase() === String(item.variantName).toLowerCase()
+      )
+      if (!variant) {
+        return NextResponse.json(
+          { error: `Variant "${item.variantName}" not found for product "${product.name}"` },
+          { status: 400, headers: getRateLimitHeaders(rateLimitResult.remaining, 50) }
+        )
+      }
+      if (item.price !== variant.price) {
+        console.warn(
+          `Price mismatch for ${product.name} (${variant.name}): client sent ${item.price}, server price is ${variant.price}`
+        )
+      }
+      verifiedItems.push({
+        slug: item.slug,
+        variantName: variant.name,
+        quantity: item.quantity,
+        price: variant.price,
+        productId: product.id,
+        variantId: variant.id,
+        name: product.name,
+      })
+    }
+
+    const subtotal = verifiedItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     const shipping = subtotal >= 20000 ? 0 : 1500
     const discount = coupon ? coupon.discount : 0
     const total = subtotal + shipping - discount
@@ -123,7 +166,7 @@ export async function POST(request: NextRequest) {
             couponCode: coupon?.code || null,
             shippingAddress: shippingAddress,
             items: {
-              create: items.map((item: { productId: string; variantId: string; quantity: number; price: number }) => ({
+              create: verifiedItems.map((item) => ({
                 productId: item.productId,
                 variantId: item.variantId,
                 quantity: item.quantity,
@@ -149,7 +192,7 @@ export async function POST(request: NextRequest) {
 
     const emailResult = await sendOrderEmail({
       email,
-      items: items.map((item: { name: string; variantName: string; price: number; quantity: number }) => ({
+      items: verifiedItems.map((item) => ({
         name: item.name,
         variantName: item.variantName,
         price: item.price,

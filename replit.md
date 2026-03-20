@@ -25,6 +25,8 @@ A production-ready e-commerce website for selling research peptides built with N
 
 ### Checkout Flow
 - Customer fills out shipping form and clicks "Submit Order"
+- **Server-side price validation**: Checkout API looks up each item's price from the product cache (Google Sheets) using slug + variant name — client-supplied prices are ignored to prevent tampering
+- **Input validation**: Item quantities must be positive integers; slug and variantName are required
 - Server sends a formatted HTML email to the admin via Resend with full order details
 - No payment is collected at checkout — admin contacts customer for payment
 - Stripe code has been removed from checkout (webhook route returns 503)
