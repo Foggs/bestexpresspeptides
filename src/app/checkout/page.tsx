@@ -343,6 +343,18 @@ export default function CheckoutPage() {
         const successUrl = data.orderNumber
           ? `/checkout/success?order=${encodeURIComponent(data.orderNumber)}`
           : "/checkout/success"
+        if (data.orderNumber) {
+          sessionStorage.setItem(`order-${data.orderNumber}`, JSON.stringify({
+            items,
+            email,
+            shippingAddress: { firstName, lastName, address, apartment, city, state, zipCode, phone },
+            subtotal,
+            shipping,
+            discount,
+            total,
+            couponCode: appliedCoupon?.code ?? null,
+          }))
+        }
         window.location.href = successUrl
       } else {
         throw new Error("Failed to submit order")
