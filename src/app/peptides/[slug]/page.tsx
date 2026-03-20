@@ -38,7 +38,7 @@ export default async function ProductPage({ params }: PageProps) {
       <ProductJsonLd
         name={product.name}
         description={product.shortDescription || product.description.substring(0, 160)}
-        image={product.images[0]}
+        image=""
         sku={productSku}
         price={lowestPrice}
         category={product.category.name}
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: PageProps) {
     openGraph: {
       title: product.name,
       description: product.shortDescription || product.description.substring(0, 160),
-      images: product.images.slice(0, 1),
+      images: [],
       type: 'website',
     },
     keywords: `${product.name}, research peptide, laboratory grade`,

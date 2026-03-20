@@ -14,7 +14,6 @@ interface SheetProduct {
   faq: string
   featured: string
   active: string
-  images: string
 }
 
 interface SheetVariant {
@@ -30,7 +29,6 @@ interface CachedProductListItem {
   name: string
   slug: string
   shortDescription: string | null
-  images: string[]
   featured: boolean
   active: boolean
   category: {
@@ -58,7 +56,6 @@ interface CachedProductFull {
   coa: string | null
   shippingInfo: string | null
   faq: string | null
-  images: string[]
   featured: boolean
   active: boolean
   categoryId: string
@@ -125,11 +122,6 @@ function parseBoolean(value: string): boolean {
   return value?.toLowerCase().trim() === 'true' || value?.toLowerCase().trim() === 'yes' || value?.trim() === '1'
 }
 
-function parseImages(value: string): string[] {
-  if (!value || !value.trim()) return ['/images/peptide-vial.png']
-  return value.split(',').map(img => img.trim()).filter(Boolean)
-}
-
 function parsePriceToCents(value: string): number {
   const cleaned = value.replace(/[^0-9.]/g, '')
   const dollars = parseFloat(cleaned)
@@ -148,7 +140,7 @@ async function fetchFromSheet(): Promise<CachedProductFull[]> {
   const [productsResponse, variantsResponse] = await Promise.all([
     sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: 'Products!A:K',
+      range: 'Products!A:J',
     }),
     sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
@@ -195,7 +187,6 @@ async function fetchFromSheet(): Promise<CachedProductFull[]> {
     'faq': 'faq',
     'featured': 'featured',
     'active': 'active',
-    'images': 'images',
   }
 
   const variantHeaderMap: Record<string, string> = {
@@ -274,7 +265,6 @@ async function fetchFromSheet(): Promise<CachedProductFull[]> {
         coa: null,
         shippingInfo: p.shippingInfo || null,
         faq: p.faq || null,
-        images: parseImages(p.images),
         featured: parseBoolean(p.featured),
         active: p.active === '' ? true : parseBoolean(p.active),
         categoryId: primaryCategoryId,
@@ -367,7 +357,6 @@ export async function getCachedProducts(options?: {
     name: p.name,
     slug: p.slug,
     shortDescription: p.shortDescription,
-    images: p.images,
     featured: p.featured,
     active: p.active,
     category: {
@@ -394,7 +383,6 @@ export async function getCachedFeaturedProducts(): Promise<CachedProductListItem
       name: p.name,
       slug: p.slug,
       shortDescription: p.shortDescription,
-      images: p.images,
       featured: p.featured,
       active: p.active,
       category: {
@@ -433,7 +421,6 @@ export async function getCachedRelatedProducts(
       name: p.name,
       slug: p.slug,
       shortDescription: p.shortDescription,
-      images: p.images,
       featured: p.featured,
       active: p.active,
       category: {

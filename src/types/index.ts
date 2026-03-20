@@ -21,7 +21,6 @@ export interface Product {
   coa?: string | null
   shippingInfo?: string | null
   faq?: string | null
-  images: string[]
   featured: boolean
   active: boolean
   categoryId: string
@@ -37,7 +36,6 @@ export interface ProductListItem {
   name: string
   slug: string
   shortDescription?: string | null
-  images: string[]
   featured: boolean
   active: boolean
   category: {
@@ -92,7 +90,6 @@ export interface OrderItem {
   product: {
     name: string
     slug: string
-    images: string[]
   }
   variant: {
     name: string

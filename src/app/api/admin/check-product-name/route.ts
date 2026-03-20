@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const sheets = await getUncachableGoogleSheetClient()
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: "Products!A:K",
+      range: "Products!A:J",
     })
 
     const rows = response.data.values

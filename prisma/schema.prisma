@@ -76,7 +76,6 @@ model Product {
   coa             String?
   shippingInfo    String?         @db.Text
   faq             String?         @db.Text
-  images          String[]
   featured        Boolean         @default(false)
   active          Boolean         @default(true)
   categoryId      String

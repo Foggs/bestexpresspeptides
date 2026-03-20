@@ -14,7 +14,6 @@ interface ProductCardProps {
     name: string
     slug: string
     shortDescription?: string | null
-    images: string[]
     category: {
       name: string
       slug: string

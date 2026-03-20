@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     const productsResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: "Products!A:K",
+      range: "Products!A:J",
     })
 
     const rows = productsResponse.data.values || []

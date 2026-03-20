@@ -45,7 +45,7 @@ export function ProductDetails({ product, relatedProducts }: ProductDetailsProps
       variantName: selectedVariant.name,
       price: selectedVariant.price,
       quantity,
-      image: product.images[0] || '',
+      image: '',
       slug: product.slug,
       stock: selectedVariant.stock,
     })

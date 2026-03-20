@@ -8,7 +8,7 @@ export const getOrdersByUser = cache(async (userId: string) => {
       items: {
         include: {
           product: {
-            select: { name: true, slug: true, images: true }
+            select: { name: true, slug: true }
           },
           variant: {
             select: { name: true }
