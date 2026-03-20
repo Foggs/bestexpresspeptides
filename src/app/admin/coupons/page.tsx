@@ -63,12 +63,6 @@ export default function CouponsPage() {
     }
   }, [])
 
-  const handleLogout = () => {
-    setAdminToken(null)
-    setAdminUser(null)
-    setCoupons([])
-  }
-
   const fetchCoupons = async (token: string) => {
     try {
       const response = await fetch("/api/admin/coupons", {
@@ -211,7 +205,6 @@ export default function CouponsPage() {
           title="Manage Coupons"
           adminEmail={adminUser?.email}
           showBack
-          onLogout={handleLogout}
         />
 
         {error && (

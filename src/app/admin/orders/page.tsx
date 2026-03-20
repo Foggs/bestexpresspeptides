@@ -88,11 +88,6 @@ export default function OrdersPage() {
     }
   }
 
-  const handleLogout = () => {
-    setAdminToken(null)
-    setAdminUser(null)
-  }
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "PENDING":
@@ -145,7 +140,6 @@ export default function OrdersPage() {
           title="Orders"
           adminEmail={adminUser?.email}
           showBack
-          onLogout={handleLogout}
         />
 
         {loading ? (

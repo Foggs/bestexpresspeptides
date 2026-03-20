@@ -29,11 +29,6 @@ export default function AdminDashboard() {
     }
   }, [])
 
-  const handleLogout = () => {
-    setAdminToken(null)
-    setAdminUser(null)
-  }
-
   if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center py-8">
@@ -66,7 +61,6 @@ export default function AdminDashboard() {
         <AdminHeader
           title="Admin Dashboard"
           adminEmail={adminUser?.email}
-          onLogout={handleLogout}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

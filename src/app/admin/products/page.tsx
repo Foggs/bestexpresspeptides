@@ -13,7 +13,7 @@ const SHEET_URL = `https://docs.google.com/spreadsheets/d/${process.env.NEXT_PUB
 
 export default function ProductsPage() {
   const router = useRouter()
-  const { mounted, adminToken, adminUser, loading, handleLogout } = useAdminAuth()
+  const { mounted, adminToken, adminUser, loading } = useAdminAuth()
 
   if (!mounted || loading) {
     return (
@@ -48,7 +48,6 @@ export default function ProductsPage() {
           title="Manage Products"
           adminEmail={adminUser?.email}
           showBack
-          onLogout={handleLogout}
         />
 
         <AddNewProductForm adminToken={adminToken} />

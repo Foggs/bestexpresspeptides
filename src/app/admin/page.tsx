@@ -100,12 +100,6 @@ export default function AdminDashboard() {
     }
   }
 
-  const handleLogout = () => {
-    setAdminToken(null)
-    setAdminUser(null)
-    setCoupons([])
-  }
-
   const fetchCoupons = async (token: string) => {
     try {
       const response = await fetch("/api/admin/coupons", {
@@ -274,7 +268,6 @@ export default function AdminDashboard() {
         <AdminHeader
           title="Admin Dashboard"
           adminEmail={adminUser?.email}
-          onLogout={handleLogout}
         />
 
         <div className="mb-8">
