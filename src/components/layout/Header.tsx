@@ -40,18 +40,20 @@ export function Header() {
               </div>
             ) : null}
 
-            <Link href="/" aria-label="Home">
-              <Button variant="outline" size="icon" aria-label="Home">
-                <Home size={20} />
-              </Button>
-            </Link>
-
             <Link href="/admin/login" aria-label="Admin">
               <Button variant="outline" size="sm">
                 <Shield size={16} className="mr-2" />
                 Admin
               </Button>
             </Link>
+            
+            <Link href="/" aria-label="Home">
+              <Button variant="outline" size="icon" aria-label="Home">
+                <Home size={20} />
+              </Button>
+            </Link>
+
+           
 
             <Link href="/cart" className="relative" aria-label={`Shopping cart${itemCount > 0 ? `, ${itemCount} items` : ''}`}>
               <Button variant="outline" size="icon" aria-label="View cart">
