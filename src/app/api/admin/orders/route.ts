@@ -11,12 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const orders = await prisma.order.findMany({
       include: {
-        items: {
-          include: {
-            product: true,
-            variant: true,
-          },
-        },
+        items: true,
         user: {
           select: {
             email: true,
@@ -59,12 +54,7 @@ export async function PATCH(request: NextRequest) {
       where: { id: orderId },
       data: { status },
       include: {
-        items: {
-          include: {
-            product: true,
-            variant: true,
-          },
-        },
+        items: true,
         user: {
           select: {
             email: true,

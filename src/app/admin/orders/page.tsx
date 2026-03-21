@@ -19,14 +19,10 @@ interface OrderItem {
   id: string
   quantity: number
   price: number
-  product: {
-    id: string
-    name: string
-  }
-  variant: {
-    id: string
-    name: string
-  }
+  productId: string
+  variantId: string
+  productName: string
+  variantName: string
 }
 
 interface Order {
@@ -345,7 +341,7 @@ export default function OrdersPage() {
                               {order.items.map((item) => (
                                 <div key={item.id} className="flex justify-between text-sm">
                                   <span>
-                                    {item.product.name} - {item.variant.name} x{item.quantity}
+                                    {item.productName} - {item.variantName} x{item.quantity}
                                   </span>
                                   <span className="text-muted-foreground">${formatPrice(item.price * item.quantity)}</span>
                                 </div>

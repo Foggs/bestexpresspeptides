@@ -120,19 +120,6 @@ export async function POST(request: NextRequest) {
     const discount = coupon ? coupon.discount : 0
     const total = subtotal + shipping - discount
 
-    const decrementResult = await decrementStock(stockItems)
-
-    if (!decrementResult.success) {
-      console.error("Failed to decrement stock:", decrementResult.error)
-      return NextResponse.json(
-        { error: "Failed to reserve inventory. Please try again." },
-        {
-          status: 500,
-          headers: getRateLimitHeaders(rateLimitResult.remaining, 50),
-        }
-      )
-    }
-
     let userId: string | null = null
     try {
       const authSession = await getServerSession(authOptions)
@@ -147,7 +134,7 @@ export async function POST(request: NextRequest) {
       console.error("Failed to resolve user session for order:", authError)
     }
 
-    let persistedOrderNumber: string | null = null
+    let orderNumber: string | null = null
     const MAX_ORDER_RETRIES = 3
     for (let attempt = 0; attempt < MAX_ORDER_RETRIES; attempt++) {
       const candidateOrderNumber = generateOrderNumber()
@@ -169,6 +156,8 @@ export async function POST(request: NextRequest) {
               create: verifiedItems.map((item) => ({
                 productId: item.productId,
                 variantId: item.variantId,
+                productName: item.name,
+                variantName: item.variantName,
                 quantity: item.quantity,
                 price: item.price,
               })),
@@ -176,7 +165,7 @@ export async function POST(request: NextRequest) {
           },
           select: { orderNumber: true },
         })
-        persistedOrderNumber = createdOrder.orderNumber
+        orderNumber = createdOrder.orderNumber
         break
       } catch (dbError: unknown) {
         const isPrismaError = typeof dbError === "object" && dbError !== null && "code" in dbError
@@ -184,11 +173,34 @@ export async function POST(request: NextRequest) {
         if (isUniqueViolation && attempt < MAX_ORDER_RETRIES - 1) {
           continue
         }
-        console.error("Failed to save order to database (stock already decremented):", dbError)
+        console.error("Failed to save order to database:", dbError)
       }
     }
 
-    const orderNumber = persistedOrderNumber || generateOrderNumber()
+    if (!orderNumber) {
+      return NextResponse.json(
+        { error: "Failed to create order. Please try again." },
+        { status: 500, headers: getRateLimitHeaders(rateLimitResult.remaining, 50) }
+      )
+    }
+
+    const decrementResult = await decrementStock(stockItems)
+
+    if (!decrementResult.success) {
+      console.error("Failed to decrement stock after order created, cancelling order:", decrementResult.error)
+      try {
+        await prisma.order.update({
+          where: { orderNumber },
+          data: { status: "CANCELLED" },
+        })
+      } catch (cancelError) {
+        console.error("Failed to cancel order after stock decrement failure:", cancelError)
+      }
+      return NextResponse.json(
+        { error: "Failed to reserve inventory. Please try again." },
+        { status: 500, headers: getRateLimitHeaders(rateLimitResult.remaining, 50) }
+      )
+    }
 
     const emailResult = await sendOrderEmail({
       email,
@@ -208,11 +220,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!emailResult.success) {
-      console.error("Failed to send order email (stock already decremented):", emailResult.error)
-    }
-
-    if (!persistedOrderNumber) {
-      console.error("Order was NOT saved to database. Email fallback was attempted. Order number:", orderNumber)
+      console.error("Failed to send order confirmation email:", emailResult.error)
     }
 
     if (decrementResult.lowStockWarnings.length > 0) {

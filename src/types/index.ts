@@ -85,13 +85,8 @@ export interface OrderItem {
   id: string
   productId: string
   variantId: string
+  productName: string
+  variantName: string
   quantity: number
   price: number
-  product: {
-    name: string
-    slug: string
-  }
-  variant: {
-    name: string
-  }
 }

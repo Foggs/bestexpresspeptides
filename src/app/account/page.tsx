@@ -20,8 +20,8 @@ interface Order {
     id: string
     quantity: number
     price: number
-    product: { name: string }
-    variant: { name: string }
+    productName: string
+    variantName: string
   }[]
 }
 
@@ -140,7 +140,7 @@ export default function AccountPage() {
                           {order.items.map((item) => (
                             <div key={item.id} className="flex justify-between">
                               <span>
-                                {item.product.name} ({item.variant.name}) x {item.quantity}
+                                {item.productName} ({item.variantName}) x {item.quantity}
                               </span>
                               <span>{formatPrice(item.price * item.quantity)}</span>
                             </div>

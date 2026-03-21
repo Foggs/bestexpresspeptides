@@ -97,7 +97,10 @@ Required environment variables:
 
 ## Inventory Management
 - `checkStock()` and `decrementStock()` in `productCache.ts` read/write the Variants sheet directly
-- Checkout flow: validate stock → decrement stock → send order email
+- Checkout flow: validate stock → create order in DB → decrement stock → send order email
+- Order is created in the database BEFORE stock is decremented to prevent silent stock loss
+- If order creation fails, stock is never touched; if stock decrement fails, the order is cancelled
+- `OrderItem` stores `productName` and `variantName` directly (no foreign key to Product/ProductVariant tables, since product data lives in Google Sheets)
 - 409 response returned if any items have insufficient stock (with details per item)
 - UI caps quantity selectors at available stock on both product detail and cart pages
 - `CartItem` type includes `stock` field for client-side enforcement

@@ -5,16 +5,7 @@ export const getOrdersByUser = cache(async (userId: string) => {
   return await prisma.order.findMany({
     where: { userId },
     include: {
-      items: {
-        include: {
-          product: {
-            select: { name: true, slug: true }
-          },
-          variant: {
-            select: { name: true }
-          },
-        },
-      },
+      items: true,
     },
     orderBy: { createdAt: 'desc' },
   })

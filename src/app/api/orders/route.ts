@@ -16,16 +16,7 @@ export async function GET() {
         email: session.user.email,
       },
       include: {
-        items: {
-          include: {
-            product: {
-              select: { name: true, slug: true },
-            },
-            variant: {
-              select: { name: true },
-            },
-          },
-        },
+        items: true,
       },
       orderBy: {
         createdAt: "desc",
