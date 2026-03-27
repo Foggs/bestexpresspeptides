@@ -593,7 +593,7 @@ export async function decrementStock(items: StockCheckItem[]): Promise<Decrement
 
 export async function getCachedCategories(): Promise<CachedCategory[]> {
   const allProducts = await getCache()
-  const activeProducts = allProducts.filter(p => p.active)
+  const activeProducts = allProducts.filter(p => p.active && p.variants.length > 0)
 
   const categoryMap = new Map<string, CachedCategory>()
 
