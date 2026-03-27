@@ -1,7 +1,7 @@
 "use client"
 
 import { useSession, signOut } from "next-auth/react"
-import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -27,14 +27,15 @@ interface Order {
 
 export default function AccountPage() {
   const { data: session, status } = useSession()
+  const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      redirect("/auth/signin")
+      router.push("/auth/signin")
     }
-  }, [status])
+  }, [status, router])
 
   useEffect(() => {
     async function fetchOrders() {
